@@ -1,180 +1,204 @@
 # Gamma Jump for Jellyfin
 
-Gamma Jump turns Jellyfin Web's alphabet picker into a fast **A–Z jump control**.
+Gamma Jump turns Jellyfin Web's native alphabet picker into a **jump control**.
 
-Instead of filtering the library down to one letter, selecting a letter scrolls to the first matching rendered title while keeping the complete current result available. Select **#** to return to the beginning.
+Instead of filtering the library to one letter, **A–Z** scrolls to the first matching title in the already rendered result. **#** returns to the beginning. Jellyfin keeps its own cards, layout, filters, search, playback controls, and library renderer.
 
-Gamma Jump uses Jellyfin's existing cards, layout, filters, search, playback, and library renderer. If the plugin cannot prove that the current result is complete and safe to jump within, it leaves Jellyfin's native alphabet behavior alone.
+If Gamma Jump cannot prove that the current result is complete and safe to use, it does **not** intercept the picker; Jellyfin's native alphabet filtering remains available.
 
-> **Compatibility:** Jellyfin **12.1+** / Jellyfin Web 12.1 behavior. Gamma Jump is a browser-side enhancement delivered by a Jellyfin server plugin.
+> **Compatibility:** Gamma Jump currently targets **Jellyfin Server 12.1 / Jellyfin Web 12.1** and the Jellyfin plugin ABI `12.1.0.0`. Newer Jellyfin versions are not claimed compatible until they are tested. The enhancement is for **Jellyfin Web**; native clients are outside the tested scope.
 
-## Quick install
+## Release and migration status
 
-1. Open **Jellyfin → Dashboard → Plugins → Repositories**.
+Gamma Jump is the renamed continuation of Alpha Jump.
+
+The rename preserves the existing plugin GUID:
+
+`4dd1ed79-9e5e-441e-8ca3-8f1b29601a48`
+
+That keeps the catalog/plugin identity stable for migration. The Gamma Jump manifest should list **Gamma Jump packages only**; Alpha Jump releases remain available in the repository's GitHub release history rather than being relabeled as Gamma Jump versions.
+
+Gamma Jump release assets use:
+
+- `gamma-jump_<VERSION>.zip`
+- `Jellyfin.Plugin.GammaJump.dll`
+
+An in-place **Alpha Jump → Gamma Jump** server upgrade still needs controlled validation before it should be described as seamless.
+
+## Install from the Jellyfin plugin repository
+
+If Gamma Jump is not yet visible in the Catalog after adding the repository, no Gamma Jump package has been published yet. Do not substitute an old Alpha Jump release as a Gamma Jump build.
+
+1. Open **Jellyfin → Dashboard → Plugins → Manage Repositories**.
 2. Add a repository named **Gamma Jump**.
-3. Use this repository URL:
+3. Set the repository URL to:
 
    `https://raw.githubusercontent.com/cr1za/Jellyfin-Gamma-Jump/main/manifest.json`
 
 4. Open **Catalog** and install **Gamma Jump**.
-5. Restart Jellyfin if prompted.
-6. Open **Dashboard → Plugins → Gamma Jump**.
-7. Enable the libraries you want to use.
-8. Refresh open Jellyfin Web tabs once.
+5. Restart Jellyfin when requested.
+6. Open **Dashboard → Plugins → Gamma Jump** and choose the libraries you want enabled.
+7. Refresh open Jellyfin Web tabs once after installation or upgrade.
 
-Repository installation is recommended because it supports normal plugin updates.
+Jellyfin's repository/catalog installation method is preferred because it provides normal plugin update handling.
 
 ### Manual installation
 
-Download the latest `gamma-jump_<VERSION>.zip` from GitHub Releases, extract it into a Gamma Jump directory beneath Jellyfin's plugins directory, and restart Jellyfin.
+For controlled testing, download a Gamma Jump release archive and extract it beneath Jellyfin's plugin directory, then restart Jellyfin.
 
-The release archive contains only `Jellyfin.Plugin.GammaJump.dll`; Jellyfin provides the runtime assemblies.
+A Gamma Jump release archive contains only:
 
-## Upgrading from Alpha Jump
+`Jellyfin.Plugin.GammaJump.dll`
 
-Gamma Jump is the continuation of Alpha Jump and keeps the same Jellyfin plugin GUID:
+Jellyfin supplies the runtime assemblies.
 
-`4dd1ed79-9e5e-441e-8ca3-8f1b29601a48`
-
-That allows an existing installation to upgrade rather than appear as a second unrelated plugin.
-
-The rename release intentionally retains two hidden compatibility details:
-
-- the previous browser-storage prefix, so existing page-size backups can still be restored;
-- the previous `/AlphaJump` API route as a temporary alias, so already-open pre-rename tabs can detect the changed browser payload.
-
-After upgrading from Alpha Jump, restart Jellyfin and refresh each open Jellyfin Web tab once.
+Do **not** place `Jellyfin.Plugin.AlphaJump.dll` and `Jellyfin.Plugin.GammaJump.dll` together in the same manual plugin directory. Test the Alpha Jump → Gamma Jump migration on a disposable server before using a manual replacement on an important installation.
 
 ## Using Gamma Jump
 
-Open a supported library view in **Grid** mode and sort by **Name / SortName ascending**.
+Open a supported library view and use:
+
+- **Grid** layout
+- **Name** ascending sort
+- an enabled library in **Dashboard → Plugins → Gamma Jump**
+
+Then use the existing Jellyfin alphabet picker:
 
 - **A–Z** — jump to the first matching rendered title.
 - **#** — return to the beginning.
-- Existing search and non-alphabet filters stay active.
-- Repeated clicks repeat the jump; Gamma Jump does not leave a selected letter behind.
-- Unsupported or uncertain views keep Jellyfin's normal picker behavior.
+- Clicking the same letter again repeats the jump.
+- Search and non-alphabet filters remain active.
+- Gamma Jump does not leave a persistent selected letter behind.
 
-Gamma Jump does not independently request library items and does not replace Jellyfin's library UI.
+Gamma Jump does not fetch library items independently and does not replace Jellyfin's library UI.
 
-## Requirements and performance
+## Why Library page size becomes `0`
 
-Gamma Jump's complete-result mode uses Jellyfin's browser-local **Library page size = 0** preference when the corresponding setting is enabled.
+For a jump to work across the complete constrained result, Gamma Jump can set the signed-in user's browser-local **Library page size** preference to `0`.
 
-Jellyfin treats zero as unpaginated mode, allowing the current constrained result to render as one complete set. This may use considerably more browser memory and CPU for very large libraries.
+In Jellyfin Web 12.1, zero disables pagination. This allows the current result to render as one complete set, but it can significantly increase browser memory, CPU use, and rendering cost for large libraries.
 
-Gamma Jump still refuses to arm merely because the page-size preference is zero. It additionally verifies the current grid, sort, start index, card types, native picker, and exact toolbar-total/card-count match.
+This preference is local to the signed-in user and browser origin, but it affects that user's Jellyfin library views on that origin—not only the one library where Gamma Jump is enabled.
 
-If another plugin such as JellyTweaks controls Library Page Size, configure it to use `0` or disable its conflicting page-size tweak.
+Gamma Jump does not treat page size `0` alone as proof that the visible result is complete. It still verifies the route, layout, sort, start index, card types, native picker, loading state, and exact toolbar-total/rendered-card count before intercepting a letter.
 
-## Supported library views
+If another plugin such as JellyTweaks controls Library Page Size, set that value to `0` as well or disable the conflicting page-size tweak.
 
-| Library/view | Supported tabs |
-| --- | --- |
-| Movies | Movies, Favorites, Collections |
-| Shows | Series, Collections |
-| Books / Audiobooks | Folders, Books, Collections, Favorites |
-| Built-in Collections | Collections, Favorites |
-| Home Videos / Photos | Folders, Photos, Photo Albums, Videos |
-| Mixed libraries | Folders, Mixed, Collections |
-| Music | Albums, Collections |
-| Music Videos | Folders, Music Videos |
-| Playlists | Playlists, Favorites |
+## Supported views
 
-Support is determined by Jellyfin collection type and verified rendered card types, not by the library's display name.
+| Library/view | Supported tabs | Expected rendered card types |
+| --- | --- | --- |
+| Movies | Movies, Favorites, Collections | `Movie`, `BoxSet` |
+| Shows | Series, Collections | `Series`, `BoxSet` |
+| Books / Audiobooks | Folders, Books, Collections, Favorites | `Folder`, `AudioBook`, `Book`, `BoxSet` |
+| Built-in Collections | Collections, Favorites | `BoxSet` |
+| Home Videos / Photos | Folders, Photos, Photo Albums, Videos | `Folder`, `Photo`, `PhotoAlbum`, `Video` |
+| Mixed libraries | Folders, Mixed, Collections | `Folder`, `Movie`, `Series`, `BoxSet` |
+| Music | Albums, Collections | `MusicAlbum`, `BoxSet` |
+| Music Videos | Folders, Music Videos | `Folder`, `MusicVideo` |
+| Playlists | Playlists, Favorites | `Playlist` |
 
-Live TV, standalone Photos pages, Suggestions, genres, studios/networks, people, authors/artists, songs, episodes/upcoming, embedded media-library playlists, item detail pages, and unrecognized layouts remain native.
+Support is based on Jellyfin's collection type, route/tab, and rendered card contract—not on the library's display name.
 
-See [docs/feasibility.md](docs/feasibility.md) and [docs/testing.md](docs/testing.md) for the detailed compatibility model and validation notes.
+Live TV, standalone Photos pages, Suggestions, genres, studios/networks, people, authors/artists, songs, episodes/upcoming, embedded media-library playlists, item/collection detail pages, unknown layouts, unsupported sorts, and unrecognized card types remain native.
+
+See [docs/feasibility.md](docs/feasibility.md) and [docs/testing.md](docs/testing.md) for the detailed compatibility and validation record.
 
 ## Configuration
 
-The Gamma Jump plugin page provides:
+The Gamma Jump settings page provides:
 
-- **Enable Gamma Jump** — global browser-enhancement switch.
-- **Enable newly discovered compatible libraries** — default for newly found supported folders.
-- **Enable built-in Collections** — separate opt-in for Jellyfin's server-provided Collections view.
-- **Per-library enablement** — stable Jellyfin library IDs survive library renames.
-- **Set the active browser user's library page size to zero** — complete-result setup, enabled by default.
+- **Enable Gamma Jump** — global injection switch.
+- **Enable newly discovered compatible libraries** — default applied when a supported library is discovered for the first time.
+- **Enable built-in Collections** — separate opt-in for Jellyfin's built-in Collections view.
+- **Per-library enablement** — stored against stable Jellyfin library IDs, so library renames do not change the selection.
+- **Set the active browser user's library page size to zero** — automatic complete-result setup; enabled by default.
 - **Smooth scroll**.
-- **Browser debug logging**.
+- **Enable browser debug logging**.
 
-Incompatible folders are shown disabled with an explanation.
+Unsupported libraries are shown disabled with an explanation rather than silently enabled.
 
-## Safety model
+## Fail-closed behavior
 
-Gamma Jump intercepts the native alphabet picker only when all required conditions are satisfied, including:
+Gamma Jump intercepts the native alphabet picker only when the current view satisfies its verified contract. Among other checks, it requires:
 
-- a registered supported Jellyfin route/tab;
-- the expected page and native alphabet picker;
-- Grid view;
-- `SortBy: ["SortName"]`;
-- ascending sort;
+- a supported Jellyfin 12.1 route and tab;
+- the expected page and exactly one native alphabet picker;
+- Grid layout;
+- ascending `SortName`;
 - explicit persisted `StartIndex: 0`;
 - allowed rendered card types with usable prefixes;
+- no pending result state;
 - an exact numeric toolbar-total to rendered-card-count match.
 
-If any requirement is missing, pending, malformed, or ambiguous, native Jellyfin behavior remains in control.
+If any required state is missing, malformed, ambiguous, changing, or unsupported, Jellyfin's native behavior remains in control.
 
-An existing Jellyfin alphabet selection is cleared using Jellyfin's own button once, then Gamma Jump waits for the unfiltered complete result before jumping.
+When Jellyfin already has an alphabet filter selected, Gamma Jump clears it through Jellyfin's existing control and waits for the complete unfiltered result before jumping.
 
-## Updates
+## Updates and the Alpha Jump rename
 
-Gamma Jump fingerprints its embedded browser script.
+Gamma Jump fingerprints the embedded browser script so a loaded Web tab can detect a changed payload after a plugin update and server restart.
 
-After a changed-script plugin upgrade and server restart, a loaded Web tab can detect the new runtime and request a refresh. Automatic reload is deliberately conservative; when safe playback state cannot be positively established, Gamma Jump displays a **refresh to apply** action instead.
+Automatic reload is intentionally conservative. If the script cannot positively establish a safe reload state, it shows a **refresh to apply** action instead of forcing a reload.
 
-The Alpha Jump → Gamma Jump rename itself requires one manual Web refresh after the server upgrade.
+For migration compatibility, the rename keeps the old browser page-size backup namespace and a temporary legacy `/AlphaJump` API alias. These are implementation compatibility details, not a second installed plugin.
+
+After the Alpha Jump → Gamma Jump rename release, restart Jellyfin and manually refresh each open Jellyfin Web tab once.
 
 ## Troubleshooting
 
-If letters still filter instead of jump:
+If the alphabet picker still filters instead of jumping:
 
 1. Confirm the library is enabled in **Dashboard → Plugins → Gamma Jump**.
-2. Use **Grid** view.
-3. Sort by **Name ascending**.
-4. Ensure the Library page-size setting is `0` when automatic setup is disabled.
-5. Remove conflicting page-size overrides from JellyTweaks or similar plugins.
-6. Refresh the Jellyfin Web tab.
+2. Confirm the view is one of the supported tabs above.
+3. Use **Grid** layout.
+4. Sort by **Name ascending**.
+5. If automatic page-size setup is disabled, set Jellyfin's Library page size to `0`.
+6. Remove conflicting page-size overrides from JellyTweaks or similar plugins.
+7. Refresh the Jellyfin Web tab.
 
-For browser diagnostics, enable **browser debug logging** in Gamma Jump's settings and inspect the browser console for `[GammaJump]` messages.
+For browser diagnostics, enable **browser debug logging** in Gamma Jump settings and inspect the browser console for `[GammaJump]` messages.
+
+Expected failures deliberately leave native Jellyfin behavior available rather than forcing the enhancement to run.
 
 ## Development
 
-Browser validation:
+Browser checks:
 
 ```sh
 node --check src/gamma-jump.js
 node --test tests/gamma-jump.test.js
 ```
 
-Plugin validation:
+Plugin build and tests:
 
 ```sh
 dotnet build plugin/Jellyfin.Plugin.GammaJump/Jellyfin.Plugin.GammaJump.csproj --configuration Release
 dotnet test plugin/Jellyfin.Plugin.GammaJump.Tests/Jellyfin.Plugin.GammaJump.Tests.csproj --configuration Release
 ```
 
-Additional release validation:
+Release/static checks:
 
 ```sh
 node scripts/validate-release-abi.js
 git diff --check
 ```
 
-The browser tests are deterministic regression tests, not a substitute for served Jellyfin compatibility/performance testing.
+The automated suites are deterministic regression checks. They are not a substitute for served Jellyfin browser compatibility or large-library performance testing.
 
 ## Release flow
 
-Four-part tags such as `v0.5.0.0` run validation, build `Jellyfin.Plugin.GammaJump.dll`, package `gamma-jump_<VERSION>.zip`, calculate checksums, and prepare the Jellyfin repository manifest update.
+The project uses four-part version tags such as `v0.5.0.0`.
 
-Historical manifest entries intentionally retain their original Alpha Jump release URLs. New Gamma Jump releases use the renamed repository and Gamma Jump asset names.
+A release tag validates the browser source and C# projects, builds the tagged plugin version, creates `gamma-jump_<VERSION>.zip`, calculates checksums, creates a draft GitHub Release, and prepares a manifest pull request. Merging the generated manifest PR publishes the prepared release.
+
+The Gamma Jump manifest contains Gamma Jump release entries only. Historical Alpha Jump releases remain in GitHub release history and are not relabeled as Gamma Jump packages.
 
 ## Technical documentation
 
 - [Architecture](docs/architecture.md)
 - [Feasibility and compatibility model](docs/feasibility.md)
-- [Testing](docs/testing.md)
+- [Testing and evidence](docs/testing.md)
 - [Security controls](docs/security.md)
 - [Project milestones](PROJECT-MILESTONES.md)
 
@@ -182,7 +206,7 @@ Historical manifest entries intentionally retain their original Alpha Jump relea
 
 See [SECURITY.md](SECURITY.md) for vulnerability reporting.
 
-The plugin does not patch installed Jellyfin Web files. Its startup middleware modifies only the served Web index HTML to add one same-origin bootstrap marker and script reference; APIs, media, images, CSS, JavaScript assets, and other paths are not rewritten.
+Gamma Jump does not modify Jellyfin Web files on disk. Its server-side startup middleware rewrites only the served Web index HTML to add a same-origin bootstrap marker and script reference. API, media, image, CSS, JavaScript asset, and other non-index responses are not intentionally rewritten.
 
 ## License
 
