@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Only the latest released Alpha Jump version receives security fixes.
+Only the latest released Gamma Jump version receives security fixes.
 
 ## Reporting a vulnerability
 

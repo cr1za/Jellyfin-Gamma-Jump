@@ -1,4 +1,4 @@
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
 /// <summary>Normalizes collection-folder identifiers at configuration boundaries.</summary>
 public static class LibraryId

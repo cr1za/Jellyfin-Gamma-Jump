@@ -1,41 +1,42 @@
 using System.Net.Mime;
-using Jellyfin.Plugin.AlphaJump.Configuration;
-using Jellyfin.Plugin.AlphaJump.Web;
+using Jellyfin.Plugin.GammaJump.Configuration;
+using Jellyfin.Plugin.GammaJump.Web;
 using MediaBrowser.Common.Api;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Jellyfin.Plugin.AlphaJump.Controllers;
+namespace Jellyfin.Plugin.GammaJump.Controllers;
 
 /// <summary>
 /// Serves the one embedded browser script and the minimal per-library browser
 /// configuration contract. The client endpoint never enumerates libraries.
 /// </summary>
 [ApiController]
-[Route("AlphaJump")]
-public sealed class AlphaJumpController : ControllerBase
+[Route("GammaJump")]
+[Route("AlphaJump")] // Legacy upgrade alias; remove only after pre-rename tabs are no longer supported.
+public sealed class GammaJumpController : ControllerBase
 {
-    private readonly IAlphaJumpConfigurationService _configurationService;
-    private readonly IAlphaJumpRuntimeInfo _runtimeInfo;
+    private readonly IGammaJumpConfigurationService _configurationService;
+    private readonly IGammaJumpRuntimeInfo _runtimeInfo;
 
     /// <summary>Initializes a new instance of the controller.</summary>
-    public AlphaJumpController(IAlphaJumpConfigurationService configurationService, IAlphaJumpRuntimeInfo runtimeInfo)
+    public GammaJumpController(IGammaJumpConfigurationService configurationService, IGammaJumpRuntimeInfo runtimeInfo)
     {
         _configurationService = configurationService;
         _runtimeInfo = runtimeInfo;
     }
 
     /// <summary>
-    /// Serves the single authoritative embedded Alpha Jump source.
+    /// Serves the single authoritative embedded Gamma Jump source.
     /// </summary>
     [AllowAnonymous]
-    [HttpGet("alpha-jump.js")]
+    [HttpGet("gamma-jump.js")]
     [Produces("text/javascript")]
     public ActionResult GetScript()
     {
         var stream = typeof(Plugin).Assembly.GetManifestResourceStream(
-            "Jellyfin.Plugin.AlphaJump.Resources.alpha-jump.js");
+            "Jellyfin.Plugin.GammaJump.Resources.gamma-jump.js");
         if (stream is null)
         {
             return NotFound();

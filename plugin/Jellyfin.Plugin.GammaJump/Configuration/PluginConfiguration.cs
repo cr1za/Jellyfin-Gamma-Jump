@@ -1,6 +1,6 @@
 using MediaBrowser.Model.Plugins;
 
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
 /// <summary>
 /// Persisted server configuration. Library choices are keyed exclusively by the
@@ -9,7 +9,7 @@ namespace Jellyfin.Plugin.AlphaJump.Configuration;
 public sealed class PluginConfiguration : BasePluginConfiguration
 {
     /// <summary>
-    /// Gets or sets a value indicating whether all Alpha Jump injection is enabled.
+    /// Gets or sets a value indicating whether all Gamma Jump injection is enabled.
     /// </summary>
     public bool Enabled { get; set; } = true;
 
@@ -20,7 +20,7 @@ public sealed class PluginConfiguration : BasePluginConfiguration
     public bool AutoEnableNewSupportedLibraries { get; set; } = true;
 
     /// <summary>
-    /// Gets or sets whether Alpha Jump is enabled for Jellyfin's built-in
+    /// Gets or sets whether Gamma Jump is enabled for Jellyfin's built-in
     /// Collections route. It is a server-provided view, not a configured media
     /// folder, so it deliberately has no fabricated library GUID.
     /// </summary>

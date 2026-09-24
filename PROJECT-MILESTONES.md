@@ -1,4 +1,4 @@
-# Jellyfin Alpha Jump — milestone tracker and prompts
+# Jellyfin Gamma Jump — milestone tracker and prompts
 
 Status: revised local Milestone 2 prototype created for review. Browser validation remains gated on the runtime evidence in `docs/feasibility.md` and `docs/testing.md`.
 
@@ -73,7 +73,7 @@ Suggested model use: Terra High for milestones 1–3; Terra Medium for routine d
 Copy this prompt when ready to begin investigation:
 
 ```text
-Investigate the feasibility of Jellyfin Alpha Jump. Follow the shared requirements in PROJECT-MILESTONES.md. This milestone is investigation only: do not scaffold the implementation, create src/dist files, install anything, or change my Jellyfin server.
+Investigate the feasibility of Jellyfin Gamma Jump. Follow the shared requirements in PROJECT-MILESTONES.md. This milestone is investigation only: do not scaffold the implementation, create src/dist files, install anything, or change my Jellyfin server.
 
 Inspect jellyfin/jellyfin-web at the exact v12.1 tag and record its commit. Browse upstream or use a separate temporary inspection checkout. Verify that the source was retrieved successfully; do not substitute another version silently. Inspect JavaScript Injector and Jellyfin Enhanced documentation/source as needed, recording versions or commits.
 
@@ -115,7 +115,7 @@ Acceptance:
 Use only after accepting the feasibility approach:
 
 ```text
-Build the smallest functional Jellyfin Alpha Jump proof of concept using the reviewed docs/feasibility.md and shared requirements in PROJECT-MILESTONES.md. First confirm R1 scope acceptance and reviewed resolutions for R2–R6, including supporting evidence for critical loading/state/interception hooks. The previous go recommendation is superseded. If a critical hook remains unverified, resolve it or report the blocker before implementing dependent behavior.
+Build the smallest functional Jellyfin Gamma Jump proof of concept using the reviewed docs/feasibility.md and shared requirements in PROJECT-MILESTONES.md. First confirm R1 scope acceptance and reviewed resolutions for R2–R6, including supporting evidence for critical loading/state/interception hooks. The previous go recommendation is superseded. If a critical hook remains unverified, resolve it or report the blocker before implementing dependent behavior.
 
 Implement plain modern JavaScript for injection into Jellyfin Web v12.1. Support only the verified modern Movies view in ascending title order. Preserve the existing renderer and alphabet picker's appearance.
 
@@ -134,11 +134,11 @@ Behavior:
 - Provide minimal accessible pending/error feedback and a way to cancel a long jump. Keep feedback consistent with the existing UI.
 - Respect reduced-motion preferences, sticky-header offsets, and keyboard activation. Avoid moving keyboard focus unexpectedly.
 
-Use a top-level configuration object with enabled, moviesOnly, smoothScroll, debug, respectSortOrder, and explicit page-load/time/no-progress limits. Define the units and semantics of each limit. Count real page-load requests rather than observation ticks. Do not use setInterval polling. Debug logs use [AlphaJump]; debug=false emits only actual errors. Never log credentials or tokens.
+Use a top-level configuration object with enabled, moviesOnly, smoothScroll, debug, respectSortOrder, and explicit page-load/time/no-progress limits. Define the units and semantics of each limit. Count real page-load requests rather than observation ticks. Do not use setInterval polling. Debug logs use [GammaJump]; debug=false emits only actual errors. Never log credentials or tokens.
 
 Make initialization idempotent and cleanup explicit. Survive SPA navigation and repeated injection without duplicate handlers or observers. A load failure must stop work and leave normal navigation usable. Unsupported states must not be intercepted.
 
-Create only the files needed for this milestone: src/alpha-jump.js, a short development README, and docs/architecture.md. Add focused automated checks only where they meaningfully verify logic such as cancellation or supported ordering; do not write tests that merely repeat the implementation.
+Create only the files needed for this milestone: src/gamma-jump.js, a short development README, and docs/architecture.md. Add focused automated checks only where they meaningfully verify logic such as cancellation or supported ordering; do not write tests that merely repeat the implementation.
 
 Update PROJECT-MILESTONES.md with implemented behavior, validation performed, and remaining uncertainty. Do not claim a browser-tested working milestone unless it was actually exercised. Do not install on my live server or publish anything. Stop at the proof-of-concept checkpoint.
 ```
@@ -154,7 +154,7 @@ Acceptance:
 ## Milestone 3 — browser validation and hardening
 
 ```text
-Validate and harden the existing Jellyfin Alpha Jump proof of concept. Follow PROJECT-MILESTONES.md and the reviewed architecture. Keep the scope at Movies with ascending title order.
+Validate and harden the existing Jellyfin Gamma Jump proof of concept. Follow PROJECT-MILESTONES.md and the reviewed architecture. Keep the scope at Movies with ascending title order.
 
 Use an authorized test environment. If none is available, identify the exact access/setup needed and complete independent local checks; do not change a live server to manufacture a test environment. Do not mark unexecuted tests as passing.
 
@@ -193,21 +193,21 @@ Acceptance:
 ## Milestone 4 — reviewable first distribution
 
 ```text
-Prepare a reviewable first distribution of Jellyfin Alpha Jump from the validated implementation. Follow PROJECT-MILESTONES.md. Do not publish a repository/release or install/restart anything on my server.
+Prepare a reviewable first distribution of Jellyfin Gamma Jump from the validated implementation. Follow PROJECT-MILESTONES.md. Do not publish a repository/release or install/restart anything on my server.
 
 Complete this file layout:
 README.md
 LICENSE
 PROJECT-MILESTONES.md
-src/alpha-jump.js
-dist/alpha-jump.js
+src/gamma-jump.js
+dist/gamma-jump.js
 docs/feasibility.md
 docs/architecture.md
 docs/testing.md
 
 Use MIT for original project code. Preserve any required third-party notices and flag licensing conflicts rather than copying incompatible upstream code into an MIT file. Do not invent a copyright holder.
 
-Keep src/alpha-jump.js as the source of truth. No build framework is needed: document a deterministic copy step for dist/alpha-jump.js and verify byte-for-byte equality before delivery.
+Keep src/gamma-jump.js as the source of truth. No build framework is needed: document a deterministic copy step for dist/gamma-jump.js and verify byte-for-byte equality before delivery.
 
 README must explain the purpose, supported view/order, exact tested versions, JavaScript Injector installation steps verified against its current documentation, configuration, disabling/uninstalling, debug logging, known limitations, Enhanced compatibility evidence, and troubleshooting. Distinguish removing this script from uninstalling the Injector plugin. Explain the potential cost of sequentially loading to late letters and clarify that native clients are outside this browser-only scope.
 
@@ -231,9 +231,9 @@ Current decision: a local, reviewable Milestone 2 prototype is authorized under 
 
 Add dated entries as work proceeds. For each decision, record the evidence, chosen behavior, and any unresolved limitation.
 
-- 2026-09-22 — Public plugin-distribution infrastructure: added the root Jellyfin repository manifest with an intentionally empty release list (no fake URL/checksum), GitHub Actions CI, and a four-part version-tag release workflow. The workflow validates JS/C#, builds with the tag version, packages only `Jellyfin.Plugin.AlphaJump.dll`, calculates MD5/SHA-256, creates/uploads a GitHub Release, and commits a newest-first real manifest entry on `main`. A maintained Jellyfin 12 plugin repository (`TheIntroDB/jellyfin-plugin`) was inspected for the array manifest, `targetAbi: 12.0.0.0`, real MD5, and release-update convention. `manifest.json` parsed successfully and `actionlint` passed for both workflows. No actual tag, release, repository publication, plugin installation, or server restart occurred. Branch protection that disallows `GITHUB_TOKEN` pushes to `main` remains a repository-setting blocker for automatic manifest commits.
+- 2026-09-22 — Public plugin-distribution infrastructure: added the root Jellyfin repository manifest with an intentionally empty release list (no fake URL/checksum), GitHub Actions CI, and a four-part version-tag release workflow. The workflow validates JS/C#, builds with the tag version, packages only `Jellyfin.Plugin.GammaJump.dll`, calculates MD5/SHA-256, creates/uploads a GitHub Release, and commits a newest-first real manifest entry on `main`. A maintained Jellyfin 12 plugin repository (`TheIntroDB/jellyfin-plugin`) was inspected for the array manifest, `targetAbi: 12.0.0.0`, real MD5, and release-update convention. `manifest.json` parsed successfully and `actionlint` passed for both workflows. No actual tag, release, repository publication, plugin installation, or server restart occurred. Branch protection that disallows `GITHUB_TOKEN` pushes to `main` remains a repository-setting blocker for automatic manifest commits.
 
-- 2026-09-20 — Milestone 2 local prototype: user accepted the narrower visible-pagination experiment (R1) but not a continuously scrollable experience. Implemented bounded page-one scan, starts-with prefix matching, native-clear bypass, cancellation, local selection, and best-effort same-query restoration in `src/alpha-jump.js`. Pre-browser review corrections added the required grid-view guard, explicit Previous-state and genuine-empty-result settle guards, initial settling, same-card native-clear evidence, top scrolling, idle query-identity selection reset, compatible-loading latest-request interception, snapshot-based no-progress detection, visible/accessibly exposed enhancement-only selection, marker cleanup on detach/destroy, and Cancel feedback cleanup. Source inspection supports public local-storage settings (`Movies - <parentId>`), MUI picker/pager structure, pending bullet, and card prefixes. An authorized test browser was unavailable, so no pointer/keyboard, settle, query-change, or actual page-transition behavior is claimed as passed; see `docs/testing.md`. No live system changed.
+- 2026-09-20 — Milestone 2 local prototype: user accepted the narrower visible-pagination experiment (R1) but not a continuously scrollable experience. Implemented bounded page-one scan, starts-with prefix matching, native-clear bypass, cancellation, local selection, and best-effort same-query restoration in `src/gamma-jump.js`. Pre-browser review corrections added the required grid-view guard, explicit Previous-state and genuine-empty-result settle guards, initial settling, same-card native-clear evidence, top scrolling, idle query-identity selection reset, compatible-loading latest-request interception, snapshot-based no-progress detection, visible/accessibly exposed enhancement-only selection, marker cleanup on detach/destroy, and Cancel feedback cleanup. Source inspection supports public local-storage settings (`Movies - <parentId>`), MUI picker/pager structure, pending bullet, and card prefixes. An authorized test browser was unavailable, so no pointer/keyboard, settle, query-change, or actual page-transition behavior is claimed as passed; see `docs/testing.md`. No live system changed.
 
 - 2026-09-20 — Milestone 2 revised local prototype: after inspecting v12.1 `libraryPageSize`, its documented zero-pagination mode, `getLimitQuery()`, and retained `StartIndex`, the user accepted a page-size-zero native unpaginated experiment. Replaced the page scanner with a fail-closed, rendered-card scroll approach. The script requires public `libraryPageSize = 0`, `movies - <parentId>` settings with explicit `StartIndex: 0`, modern grid/ascending SortName, a source-shaped picker, and source-shaped ready results. It contains no pager discovery/activation, restoration, action budget, independent request, or React access. Node syntax, six focused deterministic tests, and `git diff --check` passed; browser execution/performance remains untested. No server preference was changed and no injector install, commit, push, or publication occurred.
 
@@ -251,7 +251,7 @@ Added modern Shows main-tab support using the pinned v12.1 LibraryRoutes (/tv, C
 
 ## Server-plugin prototype — 2026-09-21
 
-Added a reviewable `plugin/Jellyfin.Plugin.AlphaJump` project and a separate xUnit project without installing, restarting, packaging, committing, pushing, publishing, or changing JavaScript Injector. The project pins the Jellyfin 12.1 plugin ABI packages (`Jellyfin.Controller`/`Jellyfin.Model` `12.1.0`) and `net10.0`, embeds `src/alpha-jump.js` at build time, exposes an admin dashboard configuration page, and uses stable collection-folder GUID selections with an auto-enable-new fallback. It injects one base-path-aware bootstrap/script tag only into normal `/web` index HTML using `IPluginServiceRegistrator` plus a stock ASP.NET Core `IStartupFilter`; API/media paths are passed through. The browser script now has a plugin mode that validates an authenticated per-library config contract before it configures pagination or intercepts a picker; failed config leaves native behavior rather than falling back to standalone defaults. Node syntax and 28 focused JS tests pass; diff whitespace check passes. C# build/xUnit and served injection are untested because this host has no .NET SDK (its newest installed runtime is .NET 8), and server-side target behavior must be tested with a .NET 10 SDK on an approved disposable server. Plugin support is limited to Movies and Shows; JellyTweaks/Jellyfin Enhanced/File Transformation/cache/compression compatibility remains open.
+Added a reviewable `plugin/Jellyfin.Plugin.GammaJump` project and a separate xUnit project without installing, restarting, packaging, committing, pushing, publishing, or changing JavaScript Injector. The project pins the Jellyfin 12.1 plugin ABI packages (`Jellyfin.Controller`/`Jellyfin.Model` `12.1.0`) and `net10.0`, embeds `src/gamma-jump.js` at build time, exposes an admin dashboard configuration page, and uses stable collection-folder GUID selections with an auto-enable-new fallback. It injects one base-path-aware bootstrap/script tag only into normal `/web` index HTML using `IPluginServiceRegistrator` plus a stock ASP.NET Core `IStartupFilter`; API/media paths are passed through. The browser script now has a plugin mode that validates an authenticated per-library config contract before it configures pagination or intercepts a picker; failed config leaves native behavior rather than falling back to standalone defaults. Node syntax and 28 focused JS tests pass; diff whitespace check passes. C# build/xUnit and served injection are untested because this host has no .NET SDK (its newest installed runtime is .NET 8), and server-side target behavior must be tested with a .NET 10 SDK on an approved disposable server. Plugin support is limited to Movies and Shows; JellyTweaks/Jellyfin Enhanced/File Transformation/cache/compression compatibility remains open.
 
 ### SDK validation update — 2026-09-21
 

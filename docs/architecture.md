@@ -1,4 +1,4 @@
-# Unpaginated Alpha Jump architecture
+# Unpaginated Gamma Jump architecture
 
 Date: 2026-09-20. Target source: Jellyfin Web `v12.1`, commit `fae41f33eb7cd636a9ef68984adb82bb247a6e1b`.
 
@@ -6,7 +6,7 @@ Date: 2026-09-20. Target source: Jellyfin Web `v12.1`, commit `fae41f33eb7cd636a
 
 | Fact | v12.1 evidence | Prototype use |
 | --- | --- | --- |
-| Page size preference | `src/apps/modern/features/preferences/components/LibraryPreferences.tsx:25-43` exposes `libraryPageSize`. `src/scripts/settings/userSettings.js:105-134,517-527` calls `appSettings` with the current user and `enableOnServer=false`; `src/scripts/settings/appSettings.js:6-11,263-273` prefixes its local-storage key with `<userId>-`. | Read/write only `<activeUserId>-libraryPageSize`, preserving a one-time Alpha Jump backup per origin/user. The old unprefixed-key assumption is retained only as historical evidence. |
+| Page size preference | `src/apps/modern/features/preferences/components/LibraryPreferences.tsx:25-43` exposes `libraryPageSize`. `src/scripts/settings/userSettings.js:105-134,517-527` calls `appSettings` with the current user and `enableOnServer=false`; `src/scripts/settings/appSettings.js:6-11,263-273` prefixes its local-storage key with `<userId>-`. | Read/write only `<activeUserId>-libraryPageSize`, preserving a one-time Gamma Jump backup per origin/user. The old unprefixed-key assumption is retained only as historical evidence. |
 | Active signed-in user | `src/lib/jellyfin-apiclient/ServerConnections.js:92-99` assigns the active client to `window.ApiClient`; `src/utils/dashboard.js:90-97` calls its `getCurrentUserId()`. | Use public `window.ApiClient.getCurrentUserId()` (and `isLoggedIn()` when available). No storage-key guessing or React context is used. |
 | Zero disables pagination | `src/strings/en-us.json:819-820` explicitly says zero disables pagination and warns of bugs/reduced performance. `src/apps/modern/features/libraries/components/LibraryToolbar.tsx:75-92,234-241` hides pagination when the value is not positive. | Default configuration sets zero once, verifies the local write, and performs at most one session-scoped reload. It never uses pager controls. |
 | Item request semantics | `src/utils/items.ts:122-126` converts zero to an omitted `limit`; `src/hooks/useFetchItems.ts:330-347` still supplies `startIndex: libraryViewSettings.StartIndex`. | Require persisted `StartIndex === 0` before interpreting cards as the complete constrained result. |
@@ -18,7 +18,7 @@ No private React context, query client, network interception, or independent ite
 
 ## Support registry and readiness gates
 
-`src/alpha-jump.js` contains a deliberately small `VIEW_REGISTRY`; it is not a
+`src/gamma-jump.js` contains a deliberately small `VIEW_REGISTRY`; it is not a
 generic “all cards” selector. The following routes/tabs are source-backed by
 `libraryRoutes.ts`, `LibraryPage.tsx`, `views/*.ts`, `settings.ts`, and
 `defaults.ts` in pinned Jellyfin Web 12.1:
@@ -76,14 +76,14 @@ picker click (capture, supported state only)
   -> scroll with sticky-header/reduced-motion handling
 ```
 
-Every `A`–`Z` click follows this jump path, including a repeated letter. `#` alone skips matching and scrolls to zero. Alpha Jump creates no persistent visual or semantic alphabet selection; it does not add `aria-current`, custom marker attributes, or picker styling. The script never presses Previous/Next, restores a page, counts page actions, or infers end-of-list from a pager.
+Every `A`–`Z` click follows this jump path, including a repeated letter. `#` alone skips matching and scrolls to zero. Gamma Jump creates no persistent visual or semantic alphabet selection; it does not add `aria-current`, custom marker attributes, or picker styling. The script never presses Previous/Next, restores a page, counts page actions, or infers end-of-list from a pager.
 
 The native-clear bypass is limited to the one programmatic click on the currently pressed native button. All other supported alphabet clicks are intercepted; unsupported clicks continue to native Jellyfin. This also prevents a rapid superseding click during a temporary no-card replacement from accidentally applying a native filter.
 
 ## Preference configuration and restoration
 
 Initialization uses the verified public API client to wait for a signed-in user.
-For that user and browser origin only, it records an Alpha Jump-owned backup of
+For that user and browser origin only, it records an Gamma Jump-owned backup of
 the exact prior setting (including absence), writes `0` to
 `<userId>-libraryPageSize`, verifies it, and calls `location.reload()` once.
 Session storage records the attempted reload and subsequent handling, so a
@@ -123,15 +123,15 @@ Source confirms the request and render paths, but it does not prove served-DOM c
 
 ## Server-plugin delivery prototype — 2026-09-21
 
-`plugin/Jellyfin.Plugin.AlphaJump` is a separate .NET 10 Jellyfin 12.1 plugin project. Its only browser payload is an MSBuild-linked embedded resource from `../../src/alpha-jump.js`; the standalone and plugin modes therefore execute identical source.
+`plugin/Jellyfin.Plugin.GammaJump` is a separate .NET 10 Jellyfin 12.1 plugin project. Its only browser payload is an MSBuild-linked embedded resource from `../../src/gamma-jump.js`; the standalone and plugin modes therefore execute identical source.
 
-On server startup, `IPluginServiceRegistrator` registers a stock ASP.NET Core `IStartupFilter`. The filter places `AlphaJumpInjectionMiddleware` before the static-file branch and before Jellyfin maps a configured Base URL. It therefore recognizes only a Web-index suffix and derives the raw prefix as its base path: root hosting is `/web`, `/web/`, or `/web/index.html`; Base URL `/jellyfin` is `/jellyfin/web`, `/jellyfin/web/`, or `/jellyfin/web/index.html`. After the normal pipeline renders an HTTP 200 `text/html` body, it adds a unique bootstrap marker before `</head>`. It never serves a replacement index and so preserves transformations made by earlier/later middleware. The marker contains same-origin URLs using that derived prefix. A marker already in the body is left alone.
+On server startup, `IPluginServiceRegistrator` registers a stock ASP.NET Core `IStartupFilter`. The filter places `GammaJumpInjectionMiddleware` before the static-file branch and before Jellyfin maps a configured Base URL. It therefore recognizes only a Web-index suffix and derives the raw prefix as its base path: root hosting is `/web`, `/web/`, or `/web/index.html`; Base URL `/jellyfin` is `/jellyfin/web`, `/jellyfin/web/`, or `/jellyfin/web/index.html`. After the normal pipeline renders an HTTP 200 `text/html` body, it adds a unique bootstrap marker before `</head>`. It never serves a replacement index and so preserves transformations made by earlier/later middleware. The marker contains same-origin URLs using that derived prefix. A marker already in the body is left alone.
 
 The transformed response cannot retain static-file validators: request `Accept-Encoding`, `If-None-Match`, and `If-Modified-Since` are removed only for those three candidate index paths; an injected response strips `ETag`, `Last-Modified`, `Content-Encoding`, and `Content-Range` before recalculating `Content-Length`. This is intentionally limited to the index document. Actual cache/compression behavior with Jellyfin Enhanced or File Transformation remains untested.
 
 The plugin configuration stores global flags and XML-compatible
 `LibrarySelectionRecord` values, rather than a dictionary. Every record holds
-an unhyphenated GUID and enabled state. `AlphaJumpConfigurationService`
+an unhyphenated GUID and enabled state. `GammaJumpConfigurationService`
 enumerates Jellyfin's configured `VirtualFolderInfo` values through
 `ILibraryManager.GetVirtualFolders()` on both client-config and
 administrator-config access, parsing each valid `ItemId` into the stable GUID.
@@ -152,7 +152,7 @@ not a discovered virtual folder and must not receive a fabricated GUID. The
 dashboard also renders Live TV as a deliberately disabled built-in row with an
 empty ID rather than pretending it is a configurable virtual folder. The
 authenticated client endpoint returns only one requested normalized GUID or the
-Collections scope and Alpha Jump's five booleans, not an inventory.
+Collections scope and Gamma Jump's five booleans, not an inventory.
 
 In plugin mode, the browser code does not set its page-size preference or attach
 picker capture handlers until it validates contract version 2 for the current
@@ -170,7 +170,7 @@ Added modern Shows main-tab support using the pinned v12.1 LibraryRoutes (/tv, C
 
 ## First-navigation activation fix — 2026-09-21
 
-User reports full results but native filtering on first navigation, with reload restoring Alpha Jump. A local production-path regression reproduced a missed attachment when cards mount before the external toolbar count settles. The mount observer now includes toolbar/count insertion and text changes, and a narrowly filtered document capture listener attempts synchronous attachment on the first supported picker click. It does not suppress unrelated or unsupported clicks. Movies/Shows late-count tests and first-click recovery/cleanup pass locally; the exact live-session cause and fresh-session behavior still require browser verification.
+User reports full results but native filtering on first navigation, with reload restoring Gamma Jump. A local production-path regression reproduced a missed attachment when cards mount before the external toolbar count settles. The mount observer now includes toolbar/count insertion and text changes, and a narrowly filtered document capture listener attempts synchronous attachment on the first supported picker click. It does not suppress unrelated or unsupported clicks. Movies/Shows late-count tests and first-click recovery/cleanup pass locally; the exact live-session cause and fresh-session behavior still require browser verification.
 
 ## First-click ownership follow-up — 2026-09-21
 
@@ -178,4 +178,4 @@ User reports the first click still applies native filtering, while a second work
 
 ## First-use settings correction — 2026-09-21
 
-The user supplied before/after evidence: the Movies view-settings key did not exist before the first letter click and existed afterward. Jellyfin LibraryProvider uses getDefaultLibraryViewSettings for an absent key; Alpha Jump previously rejected it. The script now mirrors the pinned v12.1 Movies/Series defaults in memory only when the key is absent. Existing persisted settings remain authoritative; no storage write or synthetic native click is used to initialize them. Result completeness and loading checks remain required. Two production-path regressions reproduced first-click failure before the fix and pass afterward for Movies and Shows. All 26 tests pass; fresh-browser confirmation of this specific fix remains pending. Earlier timing fixes alone did not resolve the reported failure.
+The user supplied before/after evidence: the Movies view-settings key did not exist before the first letter click and existed afterward. Jellyfin LibraryProvider uses getDefaultLibraryViewSettings for an absent key; Gamma Jump previously rejected it. The script now mirrors the pinned v12.1 Movies/Series defaults in memory only when the key is absent. Existing persisted settings remain authoritative; no storage write or synthetic native click is used to initialize them. Result completeness and loading checks remain required. Two production-path regressions reproduced first-click failure before the fix and pass afterward for Movies and Shows. All 26 tests pass; fresh-browser confirmation of this specific fix remains pending. Earlier timing fixes alone did not resolve the reported failure.

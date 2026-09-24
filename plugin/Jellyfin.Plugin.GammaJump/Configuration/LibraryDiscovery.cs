@@ -1,9 +1,9 @@
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Entities;
 
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
-/// <summary>Maps Jellyfin's configured virtual-folder abstraction to Alpha Jump libraries.</summary>
+/// <summary>Maps Jellyfin's configured virtual-folder abstraction to Gamma Jump libraries.</summary>
 internal static class LibraryDiscovery
 {
     /// <summary>Gets current libraries through Jellyfin's supported virtual-folder API.</summary>
@@ -13,7 +13,7 @@ internal static class LibraryDiscovery
         return FromVirtualFolders(libraryManager.GetVirtualFolders(), invalidItemId);
     }
 
-    /// <summary>Converts valid virtual folders to stable Alpha Jump descriptors.</summary>
+    /// <summary>Converts valid virtual folders to stable Gamma Jump descriptors.</summary>
     internal static IReadOnlyList<LibraryDescriptor> FromVirtualFolders(
         IEnumerable<VirtualFolderInfo> virtualFolders,
         Action<string>? invalidItemId = null)

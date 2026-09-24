@@ -1,7 +1,7 @@
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
 /// <summary>Serialized access to discovered libraries and plugin configuration.</summary>
-public interface IAlphaJumpConfigurationService
+public interface IGammaJumpConfigurationService
 {
     /// <summary>Gets whether injection is enabled globally.</summary>
     bool IsGloballyEnabled { get; }

@@ -1,10 +1,10 @@
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Jellyfin.Plugin.AlphaJump.Web;
+namespace Jellyfin.Plugin.GammaJump.Web;
 
 /// <summary>Small, process-scoped identity for the embedded browser payload.</summary>
-public interface IAlphaJumpRuntimeInfo
+public interface IGammaJumpRuntimeInfo
 {
     /// <summary>Gets this process's generated runtime identifier.</summary>
     string RuntimeId { get; }
@@ -15,9 +15,9 @@ public interface IAlphaJumpRuntimeInfo
 }
 
 /// <summary>Computes script identity once for one Jellyfin/plugin process.</summary>
-public sealed class AlphaJumpRuntimeInfo : IAlphaJumpRuntimeInfo
+public sealed class GammaJumpRuntimeInfo : IGammaJumpRuntimeInfo
 {
-    private AlphaJumpRuntimeInfo(string runtimeId, string scriptFingerprint, string pluginVersion)
+    private GammaJumpRuntimeInfo(string runtimeId, string scriptFingerprint, string pluginVersion)
     {
         RuntimeId = runtimeId;
         ScriptFingerprint = scriptFingerprint;
@@ -34,7 +34,7 @@ public sealed class AlphaJumpRuntimeInfo : IAlphaJumpRuntimeInfo
     public string PluginVersion { get; }
 
     /// <summary>Creates metadata from the authoritative embedded script bytes.</summary>
-    public static AlphaJumpRuntimeInfo Create(Stream script, Version? pluginVersion = null)
+    public static GammaJumpRuntimeInfo Create(Stream script, Version? pluginVersion = null)
     {
         ArgumentNullException.ThrowIfNull(script);
         using var buffer = new MemoryStream();
@@ -43,10 +43,10 @@ public sealed class AlphaJumpRuntimeInfo : IAlphaJumpRuntimeInfo
     }
 
     /// <summary>Creates deterministic fingerprint metadata for one runtime.</summary>
-    internal static AlphaJumpRuntimeInfo Create(byte[] script, Version? pluginVersion = null)
+    internal static GammaJumpRuntimeInfo Create(byte[] script, Version? pluginVersion = null)
     {
         ArgumentNullException.ThrowIfNull(script);
-        return new AlphaJumpRuntimeInfo(
+        return new GammaJumpRuntimeInfo(
             Guid.NewGuid().ToString("N"),
             Convert.ToHexString(SHA256.HashData(script)).ToLowerInvariant(),
             pluginVersion?.ToString() ?? "0");

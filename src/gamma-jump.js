@@ -1,5 +1,5 @@
 /*
- * Jellyfin Alpha Jump for Jellyfin Web 12.1 source-backed library grids.
+ * Jellyfin Gamma Jump for Jellyfin Web 12.1 source-backed library grids.
  *
  * This is deliberately a browser-only DOM enhancement. By default it sets the
  * signed-in user's browser-local Library page-size preference to 0 once, then
@@ -7,7 +7,7 @@
  * Configuration is separate from arming: only rendered card/toolbar evidence
  * proves that the current result is complete enough to jump within.
  */
-(function bootstrapAlphaJump(factory) {
+(function bootstrapGammaJump(factory) {
     if (typeof window === 'undefined' && typeof module === 'object' && module.exports) {
         module.exports = factory;
         return;
@@ -18,13 +18,13 @@
     const start = () => factory(window).init();
     if (window.document?.body) start();
     else window.addEventListener('DOMContentLoaded', start, { once: true });
-}(function createAlphaJump(root) {
+}(function createGammaJump(root) {
     'use strict';
 
     const doc = root.document;
     const CONFIG = {
         enabled: true,
-        // Alpha Jump is designed around Jellyfin's documented zero-page-size
+        // Gamma Jump is designed around Jellyfin's documented zero-page-size
         // mode. This preference is local to the signed-in user and this origin.
         autoDisablePagination: true,
         moviesOnly: false,
@@ -47,10 +47,10 @@
         // deliberately short, bounded handoff window after its restart events.
         updateRestartWindowMs: 30000
     };
-    const INSTANCE_KEY = '__alphaJumpPrototypeV1';
+    const INSTANCE_KEY = '__gammaJumpPrototypeV1';
     const LETTERS = new Set(['#', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ']);
-    const LOG_PREFIX = '[AlphaJump]';
-    const MANUAL_REFRESH_MESSAGE = 'Alpha Jump updated—refresh to apply.';
+    const LOG_PREFIX = '[GammaJump]';
+    const MANUAL_REFRESH_MESSAGE = 'Gamma Jump updated—refresh to apply.';
     // This registry is deliberately narrower than Jellyfin's route list. Each
     // entry is an ItemsView grid with a v12.1 route, tab, local-storage key,
     // and explicit rendered item contract. Suggestions, genres, people,
@@ -151,17 +151,17 @@
     }
 
     function pluginMarker() {
-        const markers = Array.from(doc?.querySelectorAll?.('#alpha-jump-plugin-bootstrap') || [])
-            .filter(marker => marker.getAttribute?.('data-alpha-jump-mode') === 'plugin');
+        const markers = Array.from(doc?.querySelectorAll?.('#gamma-jump-plugin-bootstrap') || [])
+            .filter(marker => marker.getAttribute?.('data-gamma-jump-mode') === 'plugin');
         if (markers.length !== 1) return null;
 
         const marker = markers[0];
-        const configUrl = marker.getAttribute('data-alpha-jump-config-url');
+        const configUrl = marker.getAttribute('data-gamma-jump-config-url');
         if (typeof configUrl !== 'string' || !configUrl) return null;
 
-        const runtimeUrl = marker.getAttribute('data-alpha-jump-runtime-url');
-        const runtimeId = marker.getAttribute('data-alpha-jump-runtime-id');
-        const fingerprint = marker.getAttribute('data-alpha-jump-script-fingerprint');
+        const runtimeUrl = marker.getAttribute('data-gamma-jump-runtime-url');
+        const runtimeId = marker.getAttribute('data-gamma-jump-runtime-id');
+        const fingerprint = marker.getAttribute('data-gamma-jump-script-fingerprint');
         const runtime = typeof runtimeUrl === 'string' && runtimeUrl && runtimeId && fingerprint
             ? { url: runtimeUrl, runtimeId, fingerprint }
             : null;
@@ -188,7 +188,7 @@
         if (state.destroyed) return;
         if (!update.notice?.isConnected) {
             const notice = doc.createElement('div');
-            notice.className = 'alpha-jump-update-notice';
+            notice.className = 'gamma-jump-update-notice';
             notice.setAttribute('role', 'status');
             notice.setAttribute('aria-live', 'polite');
             notice.style.cssText = 'position:fixed;right:1rem;bottom:1rem;z-index:1201;padding:.5rem .75rem;background:var(--theme-background,rgba(0,0,0,.85));color:inherit;border-radius:.25rem;';
@@ -412,7 +412,7 @@
     }
 
     function configureFromPlugin(configuration) {
-        // The contract intentionally carries only Alpha Jump's own booleans.
+        // The contract intentionally carries only Gamma Jump's own booleans.
         // Do not merge arbitrary server configuration into the standalone API.
         CONFIG.enabled = configuration.enabled;
         CONFIG.autoDisablePagination = configuration.autoDisablePagination;
@@ -446,7 +446,7 @@
         if (attempts > CONFIG.maxPluginApiRetries) {
             if (!state.plugin.readinessFailureReported.has(routeKey)) {
                 state.plugin.readinessFailureReported.add(routeKey);
-                reportError('Alpha Jump plugin configuration did not become available during startup. Native behavior remains available.');
+                reportError('Gamma Jump plugin configuration did not become available during startup. Native behavior remains available.');
             }
             state.plugin.readinessRetry = { routeKey, attempts, timer: null };
             return;
@@ -501,7 +501,7 @@
                     state.plugin.failedRoutes.add(routeKey);
                     state.plugin.routeKey = routeKey;
                     state.plugin.configuration = null;
-                    reportError('Alpha Jump plugin configuration could not be loaded. Native behavior remains available.', caught);
+                    reportError('Gamma Jump plugin configuration could not be loaded. Native behavior remains available.', caught);
                     throw caught;
                 })
                 .finally(() => {
@@ -621,7 +621,7 @@
             const userId = client.getCurrentUserId();
             return typeof userId === 'string' && userId.trim() ? userId : null;
         } catch (caught) {
-            reportPreferenceProblem('identity', 'Alpha Jump could not identify the signed-in Jellyfin user.', caught);
+            reportPreferenceProblem('identity', 'Gamma Jump could not identify the signed-in Jellyfin user.', caught);
             return null;
         }
     }
@@ -692,7 +692,7 @@
         try {
             return root.sessionStorage?.getItem(keyForUser(userId)) || null;
         } catch (caught) {
-            reportPreferenceProblem('session-storage', 'Alpha Jump could not track its one-time page-size setup attempt.', caught);
+            reportPreferenceProblem('session-storage', 'Gamma Jump could not track its one-time page-size setup attempt.', caught);
             return null;
         }
     }
@@ -719,7 +719,7 @@
         const userId = currentUserId();
         if (!userId) {
             if (routeInfo().supported) {
-                reportPreferenceProblem('identity-unavailable', 'Alpha Jump is waiting for Jellyfin authentication and will leave native behavior available until the signed-in user is known.');
+                reportPreferenceProblem('identity-unavailable', 'Gamma Jump is waiting for Jellyfin authentication and will leave native behavior available until the signed-in user is known.');
             }
             return null;
         }
@@ -728,7 +728,7 @@
 
         const origin = originKey();
         if (!origin || !root.localStorage || !root.sessionStorage) {
-            reportPreferenceProblem('storage-unavailable', 'Alpha Jump could not access browser storage for the signed-in user. Native behavior remains available.');
+            reportPreferenceProblem('storage-unavailable', 'Gamma Jump could not access browser storage for the signed-in user. Native behavior remains available.');
             return userId;
         }
 
@@ -740,12 +740,12 @@
                 if (!status) setSessionValue(userId, handledKey, 'already-zero');
                 return userId;
             }
-            // A page-size change after Alpha Jump has run is a user decision for
+            // A page-size change after Gamma Jump has run is a user decision for
             // this session. Re-injection and SPA lifecycle work must not fight it.
             if (status) {
                 state.preferenceHandledUsers.add(userId);
                 if (status === 'reload-attempted') {
-                    reportPreferenceProblem('reload-failed', 'Alpha Jump set Library page size to zero but it was not available after its one reload. Native behavior remains available; change the setting in Jellyfin Display settings and reload manually.');
+                    reportPreferenceProblem('reload-failed', 'Gamma Jump set Library page size to zero but it was not available after its one reload. Native behavior remains available; change the setting in Jellyfin Display settings and reload manually.');
                 }
                 return userId;
             }
@@ -760,7 +760,7 @@
             root.location.reload();
         } catch (caught) {
             state.preferenceHandledUsers.add(userId);
-            reportPreferenceProblem('configuration', 'Alpha Jump could not set the signed-in user\'s Library page size to zero. Native behavior remains available.', caught);
+            reportPreferenceProblem('configuration', 'Gamma Jump could not set the signed-in user\'s Library page size to zero. Native behavior remains available.', caught);
         }
         return userId;
     }
@@ -768,12 +768,12 @@
     function restorePaginationPreference() {
         const userId = currentUserId();
         if (!userId) {
-            reportPreferenceProblem('restore-identity', 'Alpha Jump could not identify the signed-in Jellyfin user for restoration.');
+            reportPreferenceProblem('restore-identity', 'Gamma Jump could not identify the signed-in Jellyfin user for restoration.');
             return false;
         }
         try {
             const backup = readBackup(userId);
-            if (!backup) throw new Error('no Alpha Jump backup exists for this user and origin');
+            if (!backup) throw new Error('no Gamma Jump backup exists for this user and origin');
             const key = preferenceKey(userId);
             if (backup.existed) root.localStorage.setItem(key, backup.value);
             else root.localStorage.removeItem(key);
@@ -781,7 +781,7 @@
             state.preferenceHandledUsers.add(userId);
             return true;
         } catch (caught) {
-            reportPreferenceProblem('restore', 'Alpha Jump could not restore this signed-in user\'s original Library page-size preference.', caught);
+            reportPreferenceProblem('restore', 'Gamma Jump could not restore this signed-in user\'s original Library page-size preference.', caught);
             return false;
         }
     }
@@ -968,7 +968,7 @@
     function ensureFeedback(context) {
         if (state.feedback?.isConnected) return state.feedback;
         const feedback = doc.createElement('div');
-        feedback.className = 'alpha-jump-feedback';
+        feedback.className = 'gamma-jump-feedback';
         feedback.setAttribute('role', 'status');
         feedback.setAttribute('aria-live', 'polite');
         feedback.style.cssText = 'position:fixed;right:3.5rem;bottom:1rem;z-index:1201;max-width:18rem;padding:.5rem .75rem;background:var(--theme-background,rgba(0,0,0,.85));color:inherit;border-radius:.25rem;font-size:.875rem;box-shadow:0 2px 8px rgba(0,0,0,.35);';
@@ -1087,7 +1087,7 @@
     function relevantPageMutation(records) {
         return records.some(record => {
             const target = record.target.nodeType === 1 ? record.target : record.target.parentElement;
-            if (target?.closest('.alpha-jump-feedback')) return false;
+            if (target?.closest('.gamma-jump-feedback')) return false;
             if (record.type === 'attributes') {
                 return record.target.matches?.('.MuiChip-label, .alphaPicker-fixed-right button');
             }
@@ -1192,12 +1192,12 @@
             if (current && /query changed/.test(String(caught?.message))) {
                 announce(current, 'Cancelled: library query changed.', false);
             } else if (current && /unsupported/.test(String(caught?.message))) {
-                announce(current, 'Alpha Jump is unavailable for this view.', false);
+                announce(current, 'Gamma Jump is unavailable for this view.', false);
             } else if (current && /timeout/.test(String(caught?.message))) {
                 announce(current, 'Search incomplete: Jellyfin results did not settle.', false);
             } else {
                 reportError('Could not prepare library results.', caught);
-                if (current) announce(current, 'Alpha Jump could not prepare these results.', false);
+                if (current) announce(current, 'Gamma Jump could not prepare these results.', false);
             }
         }
     }

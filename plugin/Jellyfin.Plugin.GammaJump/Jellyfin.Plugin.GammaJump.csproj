@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
-    <RootNamespace>Jellyfin.Plugin.AlphaJump</RootNamespace>
-    <AssemblyName>Jellyfin.Plugin.AlphaJump</AssemblyName>
+    <RootNamespace>Jellyfin.Plugin.GammaJump</RootNamespace>
+    <AssemblyName>Jellyfin.Plugin.GammaJump</AssemblyName>
     <!-- Local builds have a sensible default. Release tags override all three
          version properties with -p:Version/-p:AssemblyVersion/-p:FileVersion. -->
     <Version>0.3.0.0</Version>
@@ -29,6 +29,6 @@
     <None Remove="Configuration\configPage.html" />
     <EmbeddedResource Include="Configuration\configPage.html" />
     <!-- The standalone source is embedded directly; no second JS source exists. -->
-    <EmbeddedResource Include="..\..\src\alpha-jump.js" Link="Resources\alpha-jump.js" />
+    <EmbeddedResource Include="..\..\src\gamma-jump.js" Link="Resources\gamma-jump.js" />
   </ItemGroup>
 </Project>

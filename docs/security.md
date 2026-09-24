@@ -1,6 +1,6 @@
 # Repository security controls
 
-Alpha Jump uses repository rulesets and workflow configuration to protect the
+Gamma Jump uses repository rulesets and workflow configuration to protect the
 plugin DLL users install.
 
 ## Source and release controls

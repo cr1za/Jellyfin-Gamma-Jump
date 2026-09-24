@@ -1,23 +1,23 @@
 using MediaBrowser.Controller.Library;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
 /// <summary>
 /// Discovers collection folders from Jellyfin's supported library manager and
 /// serializes discovery plus administrator writes so discovery never overwrites
 /// an explicit selection.
 /// </summary>
-public sealed class AlphaJumpConfigurationService : IAlphaJumpConfigurationService
+public sealed class GammaJumpConfigurationService : IGammaJumpConfigurationService
 {
     private readonly ILibraryManager _libraryManager;
-    private readonly ILogger<AlphaJumpConfigurationService> _logger;
+    private readonly ILogger<GammaJumpConfigurationService> _logger;
     private readonly object _sync = new();
 
     /// <summary>Initializes a new instance of the configuration service.</summary>
-    public AlphaJumpConfigurationService(
+    public GammaJumpConfigurationService(
         ILibraryManager libraryManager,
-        ILogger<AlphaJumpConfigurationService> logger)
+        ILogger<GammaJumpConfigurationService> logger)
     {
         _libraryManager = libraryManager ?? throw new ArgumentNullException(nameof(libraryManager));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -112,13 +112,13 @@ public sealed class AlphaJumpConfigurationService : IAlphaJumpConfigurationServi
     private PluginConfiguration RequireConfiguration()
     {
         return Plugin.Instance?.Configuration
-            ?? throw new InvalidOperationException("Alpha Jump plugin configuration is not available.");
+            ?? throw new InvalidOperationException("Gamma Jump plugin configuration is not available.");
     }
 
     private IReadOnlyList<LibraryDescriptor> DiscoverAndSynchronize(PluginConfiguration configuration)
     {
         var libraries = LibraryDiscovery.Discover(_libraryManager, itemId =>
-            _logger.LogWarning("Skipping Alpha Jump library with invalid virtual-folder ItemId: {ItemId}", itemId));
+            _logger.LogWarning("Skipping Gamma Jump library with invalid virtual-folder ItemId: {ItemId}", itemId));
         if (LibraryDiscoverySynchronizer.Synchronize(configuration, libraries))
         {
             Plugin.Instance!.UpdateConfiguration(configuration);
@@ -153,7 +153,7 @@ public sealed class AlphaJumpConfigurationService : IAlphaJumpConfigurationServi
                     "livetv",
                     false,
                     false,
-                    "Live TV is intentionally unsupported; Alpha Jump leaves its guides, channels, and recordings native."))
+                    "Live TV is intentionally unsupported; Gamma Jump leaves its guides, channels, and recordings native."))
                 .ToArray());
     }
 }

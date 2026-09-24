@@ -6,7 +6,7 @@ Date: 2026-09-20. Source inspected: local Jellyfin Web `v12.1`, `fae41f33eb7cd63
 
 The user accepted a different local experiment from the original pagination scan:
 
-- Alpha Jump defaults `autoDisablePagination` to `true`, setting the signed-in user's browser/origin-local Library page size to `0` once and reloading once.
+- Gamma Jump defaults `autoDisablePagination` to `true`, setting the signed-in user's browser/origin-local Library page size to `0` once and reloading once.
 - Jellyfin natively loads/renders the complete current Movies result.
 - The enhancement intercepts a supported alphabet click and scrolls among those cards.
 - Full-library browser cost is accepted for investigation, but has not passed performance testing.
@@ -52,13 +52,13 @@ The local plugin implementation uses that narrow middleware route and embeds the
 
 ### Build evidence update — 2026-09-21
 
-The local .NET 10 SDK `10.0.401` subsequently restored and built `Jellyfin.Plugin.AlphaJump` against the 12.1.0 packages with zero warnings/errors. Its xUnit suite passed 5/5 after adding test-only runtime package references; the production project still excludes those server-provided runtime assets. This closes only compile-time and focused pure-logic evidence. Plugin loading, controller discovery, the static-file response-body path, cache/compression behavior, and Jellyfin Enhanced/File Transformation coexistence remain open until an approved disposable-server test.
+The local .NET 10 SDK `10.0.401` subsequently restored and built `Jellyfin.Plugin.GammaJump` against the 12.1.0 packages with zero warnings/errors. Its xUnit suite passed 5/5 after adding test-only runtime package references; the production project still excludes those server-provided runtime assets. This closes only compile-time and focused pure-logic evidence. Plugin loading, controller discovery, the static-file response-body path, cache/compression behavior, and Jellyfin Enhanced/File Transformation coexistence remain open until an approved disposable-server test.
 
 ### Review-finding correction update — 2026-09-21
 
 The XML-incompatible `Dictionary<Guid, bool>` was replaced with XML-compatible `LibrarySelectionRecord` values, and an actual `XmlSerializer` default/explicit-selection round trip passes. Collection GUIDs are now normalized to lower-case unhyphenated form at server, dashboard, and browser boundaries; JavaScript tests cover a realistic route/server spelling pair and a mismatch. The injection middleware now derives a configured-base prefix from the raw early-pipeline Web index path, with middleware (not helper-only) tests for root hosting, `/jellyfin` hosting, duplicate prevention, and API/media pass-through.
 
-Target-pipeline evidence was rechecked against the official Jellyfin Server `v12.1` tag `ee91c75e777da41a9c4f4855e70adc604fbf2ef8`: `Jellyfin.Server/Startup.cs` calls `app.Map(config.BaseUrl, mainApp => ...)`, and the mapped branch registers `UseDefaultFiles` and `UseStaticFiles` with `RequestPath = "/web"`. Since Alpha Jump's startup filter wraps that configure delegate, its outer middleware sees `/jellyfin/web/index.html` before the mapped branch reduces it to `/web/index.html`; deriving the prefix from the narrow Web-index suffix produces the correct same-origin script/config URLs. This is source and middleware-test evidence, not a served-server result.
+Target-pipeline evidence was rechecked against the official Jellyfin Server `v12.1` tag `ee91c75e777da41a9c4f4855e70adc604fbf2ef8`: `Jellyfin.Server/Startup.cs` calls `app.Map(config.BaseUrl, mainApp => ...)`, and the mapped branch registers `UseDefaultFiles` and `UseStaticFiles` with `RequestPath = "/web"`. Since Gamma Jump's startup filter wraps that configure delegate, its outer middleware sees `/jellyfin/web/index.html` before the mapped branch reduces it to `/web/index.html`; deriving the prefix from the narrow Web-index suffix produces the correct same-origin script/config URLs. This is source and middleware-test evidence, not a served-server result.
 
 Library discovery uses Jellyfin's supported `ILibraryManager.GetVirtualFolders()` surface and maps valid `VirtualFolderInfo.ItemId` values to stable GUID-backed selection records under the same synchronization used for administrator saves. Invalid or missing virtual-folder IDs are skipped with a warning rather than breaking settings discovery. Automated transition tests cover initial default enablement, a new library after an automatic-policy change, rename/reload persistence, unsupported exclusion, harmless stale selections, and virtual-folder discovery without accessing `RootFolder.VirtualChildren`. These findings are resolved at unit/test-host scope. The actual Jellyfin pipeline order, XML load through Jellyfin itself, administrator dashboard behavior, served base-URL injection, and browser/plugin compatibility remain unverified and are not resolved.
 

@@ -42,5 +42,5 @@ jobs:
           build-mode: ${{ matrix.build-mode }}
       - name: Build C# for CodeQL
         if: matrix.language == 'csharp'
-        run: dotnet build plugin/Jellyfin.Plugin.AlphaJump.Tests/Jellyfin.Plugin.AlphaJump.Tests.csproj --configuration Release
+        run: dotnet build plugin/Jellyfin.Plugin.GammaJump.Tests/Jellyfin.Plugin.GammaJump.Tests.csproj --configuration Release
       - uses: github/codeql-action/analyze@1c5b675653bb5c22dbe9b12b556ec555138e09fd # v4

@@ -1,6 +1,6 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const createAlphaJump = require('../src/alpha-jump.js');
+const createGammaJump = require('../src/gamma-jump.js');
 
 class FakeElement {
     constructor({ value, text = '', dataset = {}, selectors = [] } = {}) {
@@ -76,7 +76,7 @@ class FakeElement {
     }
 }
 
-// Mirrors only the source-backed entries in Alpha Jump's browser registry.
+// Mirrors only the source-backed entries in Gamma Jump's browser registry.
 // The harness intentionally gives every rendered card a concrete type so the
 // production completeness check can reject heterogeneous/unknown result DOM.
 const TEST_VIEWS = {
@@ -179,7 +179,7 @@ function createHarness({
             if (selector === '#' + pageId) return [page];
             if (selector === '.MuiToolbar-root') return [toolbar];
             if (selector === '[role="banner"], .MuiAppBar-root') return [];
-            if (selector === '#alpha-jump-plugin-bootstrap') return pluginConfiguration ? [pluginMarker] : [];
+            if (selector === '#gamma-jump-plugin-bootstrap') return pluginConfiguration ? [pluginMarker] : [];
             return [];
         },
         querySelector: selector => selector === '.docspinner.mdlSpinnerActive' ? null : null,
@@ -193,12 +193,12 @@ function createHarness({
     ]);
     const pluginMarker = pluginConfiguration ? new FakeElement() : null;
     if (pluginMarker) {
-        pluginMarker.setAttribute('data-alpha-jump-mode', 'plugin');
-        pluginMarker.setAttribute('data-alpha-jump-config-url', '/AlphaJump/client-config');
+        pluginMarker.setAttribute('data-gamma-jump-mode', 'plugin');
+        pluginMarker.setAttribute('data-gamma-jump-config-url', '/GammaJump/client-config');
         if (runtime) {
-            pluginMarker.setAttribute('data-alpha-jump-runtime-url', '/AlphaJump/runtime');
-            pluginMarker.setAttribute('data-alpha-jump-runtime-id', runtime.initial.runtimeId);
-            pluginMarker.setAttribute('data-alpha-jump-script-fingerprint', runtime.initial.fingerprint);
+            pluginMarker.setAttribute('data-gamma-jump-runtime-url', '/GammaJump/runtime');
+            pluginMarker.setAttribute('data-gamma-jump-runtime-id', runtime.initial.runtimeId);
+            pluginMarker.setAttribute('data-gamma-jump-script-fingerprint', runtime.initial.fingerprint);
         }
     }
     const sessionStorage = new Map();
@@ -221,7 +221,7 @@ function createHarness({
             ajaxRequests.push(options);
             return pluginConfigurationFailure
                 ? Promise.reject(new Error('server unavailable'))
-                : Promise.resolve(options.url === '/AlphaJump/runtime' ? nextRuntimeResponse() : pluginConfiguration);
+                : Promise.resolve(options.url === '/GammaJump/runtime' ? nextRuntimeResponse() : pluginConfiguration);
         },
         subscribe: (_events, callback) => {
             const subscription = { callback, active: true };
@@ -311,7 +311,7 @@ function createHarness({
             if (button.value === settings.Alphabet) clearNative();
         };
     });
-    const instance = createAlphaJump(root);
+    const instance = createGammaJump(root);
     return {
         ...instance,
         settings,
@@ -348,10 +348,10 @@ function createHarness({
 const turn = () => new Promise(resolve => setTimeout(resolve, 0));
 const pause = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
 
-function assertNoPersistentAlphaJumpMarker(harness) {
+function assertNoPersistentGammaJumpMarker(harness) {
     harness.buttons.forEach(button => {
-        assert.equal(button.classNames.has('alpha-jump-selected'), false);
-        assert.equal(button.getAttribute('data-alpha-jump-selected'), null);
+        assert.equal(button.classNames.has('gamma-jump-selected'), false);
+        assert.equal(button.getAttribute('data-gamma-jump-selected'), null);
         assert.equal(button.getAttribute('aria-current'), null);
     });
 }
@@ -401,7 +401,7 @@ test('production init runs automatic configuration through the public active cli
     harness.init();
     assert.equal(harness.storage.get('active-user-libraryPageSize'), '0');
     assert.equal(harness.reloads, 1);
-    assert.equal(harness.root.__alphaJumpPrototypeV1?.config.autoDisablePagination, true);
+    assert.equal(harness.root.__gammaJumpPrototypeV1?.config.autoDisablePagination, true);
 });
 
 test('auto configuration uses only the active API-client user key and does nothing for an existing zero', () => {
@@ -420,7 +420,7 @@ test('one session never loops or fights a user preference change after setup', (
     harness.test.configurePaginationPreference();
     harness.storage.set('active-user-libraryPageSize', '100');
     harness.test.configurePaginationPreference();
-    const reinjected = createAlphaJump(harness.root);
+    const reinjected = createGammaJump(harness.root);
     reinjected.test.configurePaginationPreference();
     assert.equal(harness.storage.get('active-user-libraryPageSize'), '100');
     assert.equal(harness.reloads, 1);
@@ -461,7 +461,7 @@ test('user switching and restoration stay scoped to the matching active user', (
     assert.equal(harness.test.restorePaginationPreference(), true);
     assert.equal(harness.storage.get('second-user-libraryPageSize'), '50');
     assert.equal(harness.storage.get('active-user-libraryPageSize'), '0');
-    const reinjected = createAlphaJump(harness.root);
+    const reinjected = createGammaJump(harness.root);
     reinjected.test.configurePaginationPreference();
     assert.equal(harness.storage.get('second-user-libraryPageSize'), '50');
 });
@@ -471,7 +471,7 @@ test('restoration removes an originally absent preference and does not reapply i
     harness.test.configurePaginationPreference();
     assert.equal(harness.test.restorePaginationPreference(), true);
     assert.equal(harness.storage.has('active-user-libraryPageSize'), false);
-    const reinjected = createAlphaJump(harness.root);
+    const reinjected = createGammaJump(harness.root);
     reinjected.test.configurePaginationPreference();
     assert.equal(harness.storage.has('active-user-libraryPageSize'), false);
     assert.equal(harness.reloads, 1);
@@ -497,7 +497,7 @@ test('# goes through the production native-clear and readiness path before scrol
     assert.equal(harness.buttons.find(button => button.value === 'M').getAttribute('aria-pressed'), 'false');
     assert.equal(harness.scrollCalls.at(-1).top, 0);
     assert.equal(harness.test.getState().run, null);
-    assertNoPersistentAlphaJumpMarker(harness);
+    assertNoPersistentGammaJumpMarker(harness);
 });
 
 test('repeated letter clicks are independent jump commands with no persistent marker', async () => {
@@ -519,7 +519,7 @@ test('repeated letter clicks are independent jump commands with no persistent ma
     assert.equal(harness.scrollCalls.at(-1).top, 88);
     assert.notEqual(harness.scrollCalls.at(-1).top, 0);
     assert.equal(harness.test.getState().feedback.children[0].textContent, 'First M title.');
-    assertNoPersistentAlphaJumpMarker(harness);
+    assertNoPersistentGammaJumpMarker(harness);
 });
 
 test('# remains the explicit return-to-beginning command after a letter jump', async () => {
@@ -533,7 +533,7 @@ test('# remains the explicit return-to-beginning command after a letter jump', a
     assert.equal(harness.scrollCalls.at(-1).top, 0);
     assert.equal(harness.test.getState().feedback.children[0].textContent, 'At the beginning.');
     assert.equal(harness.buttons.find(button => button.value === '#').getAttribute('aria-pressed'), 'false');
-    assertNoPersistentAlphaJumpMarker(harness);
+    assertNoPersistentGammaJumpMarker(harness);
 });
 
 test('a native alphabet subset is eligible only after this query was proven fully unpaginated', () => {
@@ -558,7 +558,7 @@ test('production waiter remains pending for the toolbar bullet and resolves from
     assert.equal(harness.scrollCalls.length, 1);
     assert.equal(harness.scrollCalls[0].top, 88);
     assert.equal(harness.buttons.find(button => button.value === 'A').getAttribute('aria-pressed'), 'false');
-    assertNoPersistentAlphaJumpMarker(harness);
+    assertNoPersistentGammaJumpMarker(harness);
 });
 
 test('a real second execute cancels the first waiter and only the latest request scrolls', async () => {
@@ -570,7 +570,7 @@ test('a real second execute cancels the first waiter and only the latest request
     await Promise.all([first, latest]);
     assert.equal(harness.scrollCalls.length, 1);
     assert.equal(harness.scrollCalls[0].top, 88);
-    assertNoPersistentAlphaJumpMarker(harness);
+    assertNoPersistentGammaJumpMarker(harness);
 });
 
 test('a production waiter cancels when the persisted query identity changes', async () => {
@@ -582,7 +582,7 @@ test('a production waiter cancels when the persisted query identity changes', as
     harness.notify(harness.chip);
     await pending;
     assert.equal(harness.scrollCalls.length, 0);
-    assertNoPersistentAlphaJumpMarker(harness);
+    assertNoPersistentGammaJumpMarker(harness);
 });
 
 test('production detach removes its listener and feedback without changing native button state', async () => {
@@ -598,7 +598,7 @@ test('production detach removes its listener and feedback without changing nativ
     assert.equal(harness.pickerRoot.listeners.has('click'), false);
     assert.equal(feedback.isConnected, false);
     assert.equal(button.getAttribute('aria-pressed'), 'false');
-    assertNoPersistentAlphaJumpMarker(harness);
+    assertNoPersistentGammaJumpMarker(harness);
 });
 
 test('Shows route uses series settings and Series cards and jumps without native filtering', async () => {
@@ -613,7 +613,7 @@ test('Shows route uses series settings and Series cards and jumps without native
     assert.equal(h.scrollCalls.length, 1);
     assert.equal(h.settings.Alphabet, null);
     assert.equal(h.buttons.find(button => button.value === 'A').getAttribute('aria-pressed'), 'false');
-    assertNoPersistentAlphaJumpMarker(h);
+    assertNoPersistentGammaJumpMarker(h);
     h.api.destroy();
 });
 test('Shows unsupported tabs, saved landing tabs, and standalone opt-outs remain native', () => {
@@ -665,7 +665,7 @@ for (const [library, expected] of Object.entries(TEST_VIEWS).filter(([name]) => 
         await turn();
         assert.equal(h.settings.Alphabet, null);
         assert.equal(h.scrollCalls.length, 1);
-        assertNoPersistentAlphaJumpMarker(h);
+        assertNoPersistentGammaJumpMarker(h);
         h.api.destroy();
     });
 }
@@ -708,7 +708,7 @@ test('built-in Collections uses the distinct server configuration scope without 
     h.init();
     await turn();
     assert.equal(h.pickerRoot.listeners.has('click'), true);
-    assert.equal(h.ajaxRequests[0].url, '/AlphaJump/client-config?scope=collections');
+    assert.equal(h.ajaxRequests[0].url, '/GammaJump/client-config?scope=collections');
     h.api.destroy();
 });
 
@@ -723,7 +723,7 @@ for (const [library] of Object.entries(TEST_VIEWS).filter(([name]) => name !== '
         assert.equal(h.settings.Alphabet, null);
         assert.equal(h.storage.has(h.settingsKey), false);
         assert.equal(h.scrollCalls.length, 1);
-        assertNoPersistentAlphaJumpMarker(h);
+        assertNoPersistentGammaJumpMarker(h);
         h.api.destroy();
     });
 }
@@ -759,7 +759,7 @@ test('first-click recovery intercepts a ready picker even without a mount notifi
     await turn();
     assert.equal(h.scrollCalls.length, 1);
     assert.equal(h.settings.Alphabet, null);
-    assertNoPersistentAlphaJumpMarker(h);
+    assertNoPersistentGammaJumpMarker(h);
     h.api.destroy();
     assert.equal(h.documentListeners.has('click'), false);
 });
@@ -777,7 +777,7 @@ for (const library of ['movies', 'series']) {
         h.setLoading(false);
         await turn();
         assert.equal(h.scrollCalls.length, 1);
-        assertNoPersistentAlphaJumpMarker(h);
+        assertNoPersistentGammaJumpMarker(h);
         h.api.destroy();
     });
 }
@@ -880,7 +880,7 @@ test('plugin runtime recovery ignores unchanged code and reloads a safe changed 
     runtime.response = { runtimeId: 'newer', scriptFingerprint: 'b'.repeat(64), pluginVersion: '0.2.1.0' };
     h.test.checkForPluginUpdate(true); await turn();
     assert.equal(h.reloads, 1);
-    const reinjected = createAlphaJump(h.root); reinjected.init(); await turn();
+    const reinjected = createGammaJump(h.root); reinjected.init(); await turn();
     reinjected.test.checkForPluginUpdate(true); await turn();
     assert.equal(h.reloads, 1);
     reinjected.api.destroy();
@@ -898,7 +898,7 @@ test('a runtime response resolving after destroy or reinjection cannot show an u
     h.init(); await turn();
     h.test.checkForPluginUpdate(true);
     assert.equal(h.runtimeCalls, 1);
-    const replacement = createAlphaJump(h.root);
+    const replacement = createGammaJump(h.root);
     replacement.init();
     resolveOld({ runtimeId: 'new', scriptFingerprint: 'b'.repeat(64), pluginVersion: '0.2.1.0' });
     await turn(); await turn();
@@ -981,7 +981,7 @@ for (const library of ['movies', 'series']) {
         assert.equal(h.settings.Alphabet, null);
         assert.equal(h.storage.has(h.settingsKey), false);
         assert.equal(h.scrollCalls.length, 1);
-        assertNoPersistentAlphaJumpMarker(h);
+        assertNoPersistentGammaJumpMarker(h);
         h.api.destroy();
     });
 }

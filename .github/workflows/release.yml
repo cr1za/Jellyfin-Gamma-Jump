@@ -1,4 +1,4 @@
-name: Release Alpha Jump
+name: Release Gamma Jump
 
 on:
   push:
@@ -19,9 +19,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      PLUGIN_PROJECT: plugin/Jellyfin.Plugin.AlphaJump/Jellyfin.Plugin.AlphaJump.csproj
-      TEST_PROJECT: plugin/Jellyfin.Plugin.AlphaJump.Tests/Jellyfin.Plugin.AlphaJump.Tests.csproj
-      PLUGIN_DLL: Jellyfin.Plugin.AlphaJump.dll
+      PLUGIN_PROJECT: plugin/Jellyfin.Plugin.GammaJump/Jellyfin.Plugin.GammaJump.csproj
+      TEST_PROJECT: plugin/Jellyfin.Plugin.GammaJump.Tests/Jellyfin.Plugin.GammaJump.Tests.csproj
+      PLUGIN_DLL: Jellyfin.Plugin.GammaJump.dll
       TARGET_ABI: 12.1.0.0
     steps:
       - name: Determine tag
@@ -59,8 +59,8 @@ jobs:
 
       - name: Validate browser source
         run: |
-          node --check src/alpha-jump.js
-          node --test tests/alpha-jump.test.js
+          node --check src/gamma-jump.js
+          node --test tests/gamma-jump.test.js
           node scripts/validate-release-abi.js
 
       - name: Restore .NET dependencies
@@ -82,8 +82,8 @@ jobs:
           VERSION: ${{ steps.tag.outputs.version }}
         run: |
           mkdir -p artifacts
-          zip_path="artifacts/alpha-jump_${VERSION}.zip"
-          dll_path="plugin/Jellyfin.Plugin.AlphaJump/bin/Release/net10.0/${PLUGIN_DLL}"
+          zip_path="artifacts/gamma-jump_${VERSION}.zip"
+          dll_path="plugin/Jellyfin.Plugin.GammaJump/bin/Release/net10.0/${PLUGIN_DLL}"
           test -f "$dll_path"
           zip -j "$zip_path" "$dll_path"
           test "$(unzip -Z1 "$zip_path" | wc -l)" -eq 1
@@ -138,7 +138,7 @@ jobs:
           TAG: ${{ steps.tag.outputs.tag }}
           CHECKSUM: ${{ steps.checksum.outputs.md5 }}
         run: |
-          source_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/alpha-jump_${VERSION}.zip"
+          source_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${TAG}/gamma-jump_${VERSION}.zip"
           timestamp="$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
           jq --arg version "$VERSION" \
              --arg changelog "$CHANGELOG_RAW" \

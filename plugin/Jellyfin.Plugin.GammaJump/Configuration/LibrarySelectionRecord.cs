@@ -1,6 +1,6 @@
 using System.Xml.Serialization;
 
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
 /// <summary>
 /// XML-compatible persisted state for one discovered, supported collection
@@ -12,7 +12,7 @@ public sealed class LibrarySelectionRecord
     [XmlAttribute]
     public string LibraryId { get; set; } = string.Empty;
 
-    /// <summary>Gets or sets whether Alpha Jump is enabled for this library.</summary>
+    /// <summary>Gets or sets whether Gamma Jump is enabled for this library.</summary>
     [XmlAttribute]
     public bool Enabled { get; set; }
 }

@@ -1,15 +1,15 @@
 using System.Globalization;
-using Jellyfin.Plugin.AlphaJump.Configuration;
+using Jellyfin.Plugin.GammaJump.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
-using Jellyfin.Plugin.AlphaJump.Web;
+using Jellyfin.Plugin.GammaJump.Web;
 
-namespace Jellyfin.Plugin.AlphaJump;
+namespace Jellyfin.Plugin.GammaJump;
 
 /// <summary>
-/// Jellyfin entry point for the Alpha Jump Web enhancement.
+/// Jellyfin entry point for the Gamma Jump Web enhancement.
 /// </summary>
 public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
 {
@@ -24,7 +24,7 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     public static Plugin? Instance { get; private set; }
 
     /// <summary>Gets this process's browser-payload identity.</summary>
-    public IAlphaJumpRuntimeInfo RuntimeInfo { get; }
+    public IGammaJumpRuntimeInfo RuntimeInfo { get; }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Plugin"/> class.
@@ -33,13 +33,13 @@ public sealed class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
         : base(applicationPaths, xmlSerializer)
     {
         Instance = this;
-        using var script = GetType().Assembly.GetManifestResourceStream("Jellyfin.Plugin.AlphaJump.Resources.alpha-jump.js")
-            ?? throw new InvalidOperationException("The embedded Alpha Jump browser script is missing.");
-        RuntimeInfo = AlphaJumpRuntimeInfo.Create(script, GetType().Assembly.GetName().Version);
+        using var script = GetType().Assembly.GetManifestResourceStream("Jellyfin.Plugin.GammaJump.Resources.gamma-jump.js")
+            ?? throw new InvalidOperationException("The embedded Gamma Jump browser script is missing.");
+        RuntimeInfo = GammaJumpRuntimeInfo.Create(script, GetType().Assembly.GetName().Version);
     }
 
     /// <inheritdoc />
-    public override string Name => "Alpha Jump";
+    public override string Name => "Gamma Jump";
 
     /// <inheritdoc />
     public override Guid Id => PluginId;

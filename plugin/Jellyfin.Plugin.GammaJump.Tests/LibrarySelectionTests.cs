@@ -1,11 +1,11 @@
 using System.Reflection;
 using System.Xml.Serialization;
-using Jellyfin.Plugin.AlphaJump.Configuration;
+using Jellyfin.Plugin.GammaJump.Configuration;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Model.Entities;
 using Xunit;
 
-namespace Jellyfin.Plugin.AlphaJump.Tests;
+namespace Jellyfin.Plugin.GammaJump.Tests;
 
 public class LibrarySelectionTests
 {
@@ -131,7 +131,7 @@ public class LibrarySelectionTests
     public void AdministratorConfigurationShowsBuiltInLiveTvDisabledWithoutAnInventedId()
     {
         var configuration = new PluginConfiguration();
-        var response = AlphaJumpConfigurationService.ToAdministratorConfiguration(
+        var response = GammaJumpConfigurationService.ToAdministratorConfiguration(
             configuration,
             [new LibraryDescriptor(Guid.NewGuid(), "Movies", "movies")]);
 

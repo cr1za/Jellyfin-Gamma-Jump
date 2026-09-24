@@ -1,4 +1,4 @@
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
 /// <summary>
 /// Adds one XML-persisted selection record for each newly discovered supported

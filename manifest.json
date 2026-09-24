@@ -1,12 +1,12 @@
 [
   {
     "guid": "4dd1ed79-9e5e-441e-8ca3-8f1b29601a48",
-    "name": "Alpha Jump",
-    "description": "Changes the Jellyfin Web alphabet picker into a direct scroll to matching Movies and Shows without filtering the rendered library.",
-    "overview": "Plex-style alphabet jumping for supported Jellyfin Web Movies and Shows libraries without native alphabet filtering.",
-    "owner": "The-Grog",
+    "name": "Gamma Jump",
+    "description": "Turns the Jellyfin Web alphabet picker into direct A–Z jumping across supported complete library grids without filtering the rendered result.",
+    "overview": "Plex-style alphabet jumping for supported Jellyfin Web libraries while keeping the complete rendered result visible.",
+    "owner": "cr1za",
     "category": "General",
-    "imageUrl": "https://raw.githubusercontent.com/The-Grog/Jellyfin-Alpha-Jump/main/docs/images/alpha-jump-icon.png",
+    "imageUrl": "https://raw.githubusercontent.com/cr1za/Jellyfin-Gamma-Jump/main/docs/images/gamma-jump-icon.png",
     "versions": [
       {
         "version": "0.4.0.0",

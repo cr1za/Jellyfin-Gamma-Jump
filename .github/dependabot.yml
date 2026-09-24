@@ -10,12 +10,12 @@ updates:
         patterns:
           - '*'
   - package-ecosystem: nuget
-    directory: /plugin/Jellyfin.Plugin.AlphaJump
+    directory: /plugin/Jellyfin.Plugin.GammaJump
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
   - package-ecosystem: nuget
-    directory: /plugin/Jellyfin.Plugin.AlphaJump.Tests
+    directory: /plugin/Jellyfin.Plugin.GammaJump.Tests
     schedule:
       interval: weekly
     open-pull-requests-limit: 5

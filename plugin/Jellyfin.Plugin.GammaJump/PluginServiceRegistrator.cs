@@ -1,11 +1,11 @@
-using Jellyfin.Plugin.AlphaJump.Configuration;
-using Jellyfin.Plugin.AlphaJump.Web;
+using Jellyfin.Plugin.GammaJump.Configuration;
+using Jellyfin.Plugin.GammaJump.Web;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Plugins;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Jellyfin.Plugin.AlphaJump;
+namespace Jellyfin.Plugin.GammaJump;
 
 /// <summary>
 /// Registers the stock ASP.NET Core startup filter that places the narrowly
@@ -16,9 +16,9 @@ public sealed class PluginServiceRegistrator : IPluginServiceRegistrator
     /// <inheritdoc />
     public void RegisterServices(IServiceCollection serviceCollection, IServerApplicationHost applicationHost)
     {
-        serviceCollection.AddSingleton<IAlphaJumpConfigurationService, AlphaJumpConfigurationService>();
-        serviceCollection.AddSingleton<IAlphaJumpRuntimeInfo>(_ => Plugin.Instance?.RuntimeInfo
-            ?? throw new InvalidOperationException("Alpha Jump runtime metadata is not available."));
-        serviceCollection.AddTransient<IStartupFilter, AlphaJumpStartupFilter>();
+        serviceCollection.AddSingleton<IGammaJumpConfigurationService, GammaJumpConfigurationService>();
+        serviceCollection.AddSingleton<IGammaJumpRuntimeInfo>(_ => Plugin.Instance?.RuntimeInfo
+            ?? throw new InvalidOperationException("Gamma Jump runtime metadata is not available."));
+        serviceCollection.AddTransient<IStartupFilter, GammaJumpStartupFilter>();
     }
 }

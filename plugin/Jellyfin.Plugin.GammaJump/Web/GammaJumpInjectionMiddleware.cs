@@ -1,27 +1,27 @@
 using System.Text;
-using Jellyfin.Plugin.AlphaJump.Configuration;
+using Jellyfin.Plugin.GammaJump.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 
-namespace Jellyfin.Plugin.AlphaJump.Web;
+namespace Jellyfin.Plugin.GammaJump.Web;
 
 /// <summary>
 /// Rewrites only Jellyfin Web's index document in memory. It passes every API,
 /// media, image, script, and non-index Web request through unchanged.
 /// </summary>
-public sealed class AlphaJumpInjectionMiddleware
+public sealed class GammaJumpInjectionMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly IAlphaJumpConfigurationService _configurationService;
-    private readonly IAlphaJumpRuntimeInfo _runtimeInfo;
+    private readonly IGammaJumpConfigurationService _configurationService;
+    private readonly IGammaJumpRuntimeInfo _runtimeInfo;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="AlphaJumpInjectionMiddleware"/> class.
+    /// Initializes a new instance of the <see cref="GammaJumpInjectionMiddleware"/> class.
     /// </summary>
-    public AlphaJumpInjectionMiddleware(
+    public GammaJumpInjectionMiddleware(
         RequestDelegate next,
-        IAlphaJumpConfigurationService configurationService,
-        IAlphaJumpRuntimeInfo runtimeInfo)
+        IGammaJumpConfigurationService configurationService,
+        IGammaJumpRuntimeInfo runtimeInfo)
     {
         _next = next;
         _configurationService = configurationService;
@@ -69,7 +69,7 @@ public sealed class AlphaJumpInjectionMiddleware
 
             using var reader = new StreamReader(buffer, Encoding.UTF8, detectEncodingFromByteOrderMarks: true, leaveOpen: true);
             var html = await reader.ReadToEndAsync(context.RequestAborted).ConfigureAwait(false);
-            if (!AlphaJumpInjection.TryInject(html, injectionBasePath, _runtimeInfo, out var transformed))
+            if (!GammaJumpInjection.TryInject(html, injectionBasePath, _runtimeInfo, out var transformed))
             {
                 buffer.Position = 0;
                 await buffer.CopyToAsync(context.Response.Body, context.RequestAborted).ConfigureAwait(false);

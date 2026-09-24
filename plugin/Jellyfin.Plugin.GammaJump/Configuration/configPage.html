@@ -2,17 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Alpha Jump</title>
+    <title>Gamma Jump</title>
 </head>
 <body>
-    <div id="AlphaJumpConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-checkbox">
+    <div id="GammaJumpConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-checkbox">
         <div data-role="content">
             <div class="content-primary">
-                <form id="AlphaJumpConfigForm">
+                <form id="GammaJumpConfigForm">
                     <div class="checkboxContainer checkboxContainer-withDescription">
                         <label class="emby-checkbox-label">
                             <input id="Enabled" type="checkbox" is="emby-checkbox" />
-                            <span>Enable Alpha Jump</span>
+                            <span>Enable Gamma Jump</span>
                         </label>
                         <div class="fieldDescription">Loads the browser enhancement only for enabled supported libraries.</div>
                     </div>
@@ -52,8 +52,8 @@
 
                     <h2 class="sectionTitle">Libraries</h2>
                     <p class="fieldDescription">Compatible library grids can be enabled individually. Live TV and views without a verified alphabet-picker grid remain disabled.</p>
-                    <div id="AlphaJumpLibraries" class="verticalSection"></div>
-                    <div id="AlphaJumpStatus" class="fieldDescription" role="status" aria-live="polite"></div>
+                    <div id="GammaJumpLibraries" class="verticalSection"></div>
+                    <div id="GammaJumpStatus" class="fieldDescription" role="status" aria-live="polite"></div>
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button"><span>Save</span></button>
                     </div>
@@ -63,10 +63,10 @@
         <script type="text/javascript">
             (function () {
                 'use strict';
-                var page = document.querySelector('#AlphaJumpConfigPage');
-                var form = document.querySelector('#AlphaJumpConfigForm');
-                var librariesRoot = document.querySelector('#AlphaJumpLibraries');
-                var status = document.querySelector('#AlphaJumpStatus');
+                var page = document.querySelector('#GammaJumpConfigPage');
+                var form = document.querySelector('#GammaJumpConfigForm');
+                var librariesRoot = document.querySelector('#GammaJumpLibraries');
+                var status = document.querySelector('#GammaJumpStatus');
                 var libraries = [];
 
                 function field(name) { return document.querySelector('#' + name); }
@@ -79,7 +79,7 @@
                 function readConfiguration() {
                     return ApiClient.ajax({
                         type: 'GET',
-                        url: ApiClient.getUrl('AlphaJump/admin/config'),
+                        url: ApiClient.getUrl('GammaJump/admin/config'),
                         dataType: 'json'
                     });
                 }
@@ -132,7 +132,7 @@
                         })
                         .catch(function () {
                             libraries = [];
-                            librariesRoot.textContent = 'Could not read Alpha Jump configuration. Check that this page is opened by a Jellyfin administrator.';
+                            librariesRoot.textContent = 'Could not read Gamma Jump configuration. Check that this page is opened by a Jellyfin administrator.';
                             setStatus('Configuration was not changed.');
                         })
                         .finally(function () { Dashboard.hideLoadingMsg(); });
@@ -154,7 +154,7 @@
                         });
                     return ApiClient.ajax({
                         type: 'POST',
-                        url: ApiClient.getUrl('AlphaJump/admin/config'),
+                        url: ApiClient.getUrl('GammaJump/admin/config'),
                         dataType: 'json',
                         contentType: 'application/json',
                         data: JSON.stringify(configuration)
@@ -163,7 +163,7 @@
                         fill(result);
                         setStatus('Saved. Refresh a Jellyfin Web page to apply the changed browser configuration.');
                     }).catch(function () {
-                        setStatus('Could not save Alpha Jump configuration.');
+                        setStatus('Could not save Gamma Jump configuration.');
                     }).finally(function () { Dashboard.hideLoadingMsg(); });
                 });
                 page.addEventListener('pageshow', load);

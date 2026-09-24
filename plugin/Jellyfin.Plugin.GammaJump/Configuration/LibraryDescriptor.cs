@@ -1,4 +1,4 @@
-namespace Jellyfin.Plugin.AlphaJump.Configuration;
+namespace Jellyfin.Plugin.GammaJump.Configuration;
 
 /// <summary>One currently discovered Jellyfin collection folder.</summary>
 public sealed record LibraryDescriptor(Guid Id, string Name, string CollectionType)
@@ -14,13 +14,13 @@ public sealed record LibraryDescriptor(Guid Id, string Name, string CollectionTy
         ? "mixed"
         : CollectionType.Trim().ToLowerInvariant();
 
-    /// <summary>Gets whether the folder has a compatible Alpha Jump grid.</summary>
+    /// <summary>Gets whether the folder has a compatible Gamma Jump grid.</summary>
     public bool IsSupported => SupportedCollectionTypes.Contains(EffectiveCollectionType);
 
     /// <summary>Gets a short administrator-facing explanation for unsupported folders.</summary>
     public string? UnsupportedReason => IsSupported
         ? null
         : string.Equals(EffectiveCollectionType, "livetv", StringComparison.OrdinalIgnoreCase)
-            ? "Live TV is intentionally unsupported; Alpha Jump leaves its guides, channels, and recordings native."
-            : "This library type does not have a source-backed Alpha Jump grid.";
+            ? "Live TV is intentionally unsupported; Gamma Jump leaves its guides, channels, and recordings native."
+            : "This library type does not have a source-backed Gamma Jump grid.";
 }

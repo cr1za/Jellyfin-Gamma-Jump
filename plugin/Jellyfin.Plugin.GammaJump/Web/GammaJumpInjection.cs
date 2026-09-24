@@ -2,21 +2,21 @@ using System.Net;
 using System.Text.Encodings.Web;
 using Microsoft.AspNetCore.Http;
 
-namespace Jellyfin.Plugin.AlphaJump.Web;
+namespace Jellyfin.Plugin.GammaJump.Web;
 
 /// <summary>
 /// Builds and inserts the fixed plugin bootstrap markup. Keeping this operation
 /// pure makes duplicate-injection and base-path behavior testable without a
 /// running Jellyfin server.
 /// </summary>
-public static class AlphaJumpInjection
+public static class GammaJumpInjection
 {
-    private const string MarkerId = "alpha-jump-plugin-bootstrap";
+    private const string MarkerId = "gamma-jump-plugin-bootstrap";
 
     /// <summary>
     /// Tries to append the bootstrap marker and embedded-script URL to HTML.
     /// </summary>
-    public static bool TryInject(string html, PathString pathBase, IAlphaJumpRuntimeInfo runtimeInfo, out string transformed)
+    public static bool TryInject(string html, PathString pathBase, IGammaJumpRuntimeInfo runtimeInfo, out string transformed)
     {
         ArgumentNullException.ThrowIfNull(html);
         ArgumentNullException.ThrowIfNull(runtimeInfo);
@@ -40,14 +40,14 @@ public static class AlphaJumpInjection
     /// <summary>
     /// Builds markup with a base-path-aware script and config URL.
     /// </summary>
-    public static string BuildBootstrapMarkup(PathString pathBase, IAlphaJumpRuntimeInfo runtimeInfo)
+    public static string BuildBootstrapMarkup(PathString pathBase, IGammaJumpRuntimeInfo runtimeInfo)
     {
         var prefix = pathBase.HasValue ? pathBase.Value!.TrimEnd('/') : string.Empty;
         var encodedPrefix = HtmlEncoder.Default.Encode(prefix);
         var fingerprint = WebUtility.UrlEncode(runtimeInfo.ScriptFingerprint);
         var runtimeId = HtmlEncoder.Default.Encode(runtimeInfo.RuntimeId);
         var version = HtmlEncoder.Default.Encode(runtimeInfo.PluginVersion);
-        return $"<script id=\"{MarkerId}\" data-alpha-jump-mode=\"plugin\" data-alpha-jump-config-url=\"{encodedPrefix}/AlphaJump/client-config\" data-alpha-jump-runtime-url=\"{encodedPrefix}/AlphaJump/runtime\" data-alpha-jump-runtime-id=\"{runtimeId}\" data-alpha-jump-script-fingerprint=\"{fingerprint}\" data-alpha-jump-plugin-version=\"{version}\"></script>"
-            + $"<script src=\"{encodedPrefix}/AlphaJump/alpha-jump.js?h={fingerprint}\" defer></script>";
+        return $"<script id=\"{MarkerId}\" data-gamma-jump-mode=\"plugin\" data-gamma-jump-config-url=\"{encodedPrefix}/GammaJump/client-config\" data-gamma-jump-runtime-url=\"{encodedPrefix}/GammaJump/runtime\" data-gamma-jump-runtime-id=\"{runtimeId}\" data-gamma-jump-script-fingerprint=\"{fingerprint}\" data-gamma-jump-plugin-version=\"{version}\"></script>"
+            + $"<script src=\"{encodedPrefix}/GammaJump/gamma-jump.js?h={fingerprint}\" defer></script>";
     }
 }

@@ -5,7 +5,7 @@
  */
 const fs = require('node:fs');
 
-const project = fs.readFileSync('plugin/Jellyfin.Plugin.AlphaJump/Jellyfin.Plugin.AlphaJump.csproj', 'utf8');
+const project = fs.readFileSync('plugin/Jellyfin.Plugin.GammaJump/Jellyfin.Plugin.GammaJump.csproj', 'utf8');
 const versions = ['Jellyfin.Controller', 'Jellyfin.Model'].map(name => {
     const match = project.match(new RegExp(`<PackageReference Include="${name}" Version="([^"]+)"`));
     if (!match) throw new Error(`Missing pinned ${name} package reference.`);

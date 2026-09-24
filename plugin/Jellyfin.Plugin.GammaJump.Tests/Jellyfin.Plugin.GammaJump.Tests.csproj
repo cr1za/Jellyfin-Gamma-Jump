@@ -6,7 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jellyfin.Plugin.AlphaJump\Jellyfin.Plugin.AlphaJump.csproj" />
+    <ProjectReference Include="..\Jellyfin.Plugin.GammaJump\Jellyfin.Plugin.GammaJump.csproj" />
     <!-- The production plugin excludes Jellyfin runtime assemblies because the
          server supplies them. Tests run outside Jellyfin, so they need their
          own test-host copies. -->

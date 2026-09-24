@@ -1,4 +1,4 @@
-name: Publish Alpha Jump Release
+name: Publish Gamma Jump Release
 
 on:
   pull_request:
@@ -29,7 +29,7 @@ jobs:
             exit 1
           fi
           version="${tag#v}"
-          source_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/alpha-jump_${version}.zip"
+          source_url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/gamma-jump_${version}.zip"
           jq -e --arg version "$version" --arg source_url "$source_url" \
             '.[0].versions[] | select(.version == $version and .sourceUrl == $source_url and (.checksum | type == "string") and (.checksum | length > 0))' \
             manifest.json >/dev/null
